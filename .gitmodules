@@ -1,0 +1,3 @@
+[submodule "resona-api"]
+	path = resona-api
+	url = https://github.com/resona-dev/resona-api.git
