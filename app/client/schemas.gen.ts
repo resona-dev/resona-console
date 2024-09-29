@@ -32,31 +32,6 @@ export const APIRequestSchema = {
     title: 'APIRequest'
 } as const;
 
-export const CallbackSchema = {
-    properties: {
-        id: {
-            anyOf: [
-                {
-                    type: 'string'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Id',
-            examples: [
-                null
-            ]
-        },
-        request: {
-            '$ref': '#/components/schemas/APIRequest'
-        }
-    },
-    type: 'object',
-    required: ['request'],
-    title: 'Callback'
-} as const;
-
 export const CronJobSchema = {
     properties: {
         id: {
@@ -99,6 +74,12 @@ export const HTTPValidationErrorSchema = {
     },
     type: 'object',
     title: 'HTTPValidationError'
+} as const;
+
+export const JobStatusSchema = {
+    type: 'string',
+    enum: ['pending', 'active', 'paused'],
+    title: 'JobStatus'
 } as const;
 
 export const OneTimeJobSchema = {
@@ -147,6 +128,46 @@ export const OneTimeJobSchema = {
     type: 'object',
     required: ['request'],
     title: 'OneTimeJob'
+} as const;
+
+export const ScheduledJobSchema = {
+    properties: {
+        id: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Id',
+            examples: [
+                null
+            ]
+        },
+        request: {
+            '$ref': '#/components/schemas/APIRequest'
+        },
+        next_run_time: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Next Run Time'
+        },
+        status: {
+            '$ref': '#/components/schemas/JobStatus'
+        }
+    },
+    type: 'object',
+    required: ['request', 'next_run_time', 'status'],
+    title: 'ScheduledJob'
 } as const;
 
 export const ValidationErrorSchema = {

@@ -9,11 +9,6 @@ export type APIRequest = {
     body?: unknown;
 };
 
-export type Callback = {
-    id?: (string | null);
-    request: APIRequest;
-};
-
 export type CronJob = {
     id?: (string | null);
     request: APIRequest;
@@ -24,11 +19,20 @@ export type HTTPValidationError = {
     detail?: Array<ValidationError>;
 };
 
+export type JobStatus = 'pending' | 'active' | 'paused';
+
 export type OneTimeJob = {
     id?: (string | null);
     request: APIRequest;
     delay?: (number | null);
     date?: (string | null);
+};
+
+export type ScheduledJob = {
+    id?: (string | null);
+    request: APIRequest;
+    next_run_time: (string | null);
+    status: JobStatus;
 };
 
 export type ValidationError = {
@@ -37,42 +41,42 @@ export type ValidationError = {
     type: string;
 };
 
-export type CreateOneTimeJobJobsJobsOneTimePostData = {
+export type CreateOneTimeJobData = {
     body: OneTimeJob;
 };
 
-export type CreateOneTimeJobJobsJobsOneTimePostResponse = (unknown);
+export type CreateOneTimeJobResponse = (unknown);
 
-export type CreateOneTimeJobJobsJobsOneTimePostError = (HTTPValidationError);
+export type CreateOneTimeJobError = (HTTPValidationError);
 
-export type CreateCronJobJobsJobsCronPostData = {
+export type CreateCronJobJobsCronPostData = {
     body: CronJob;
 };
 
-export type CreateCronJobJobsJobsCronPostResponse = (unknown);
+export type CreateCronJobJobsCronPostResponse = (unknown);
 
-export type CreateCronJobJobsJobsCronPostError = (HTTPValidationError);
+export type CreateCronJobJobsCronPostError = (HTTPValidationError);
 
-export type GetJobJobsJobsJobIdGetData = {
+export type GetJobJobsJobIdGetData = {
     path: {
         job_id: string;
     };
 };
 
-export type GetJobJobsJobsJobIdGetResponse = ((Callback | null));
+export type GetJobJobsJobIdGetResponse = ((ScheduledJob | null));
 
-export type GetJobJobsJobsJobIdGetError = (HTTPValidationError);
+export type GetJobJobsJobIdGetError = (HTTPValidationError);
 
-export type RemoveJobJobsJobsJobIdDeleteData = {
+export type RemoveJobJobsJobIdDeleteData = {
     path: {
         job_id: string;
     };
 };
 
-export type RemoveJobJobsJobsJobIdDeleteResponse = (unknown);
+export type RemoveJobJobsJobIdDeleteResponse = (unknown);
 
-export type RemoveJobJobsJobsJobIdDeleteError = (HTTPValidationError);
+export type RemoveJobJobsJobIdDeleteError = (HTTPValidationError);
 
-export type GetAllJobsJobsJobsGetResponse = (Array<Callback>);
+export type GetAllJobsResponse = (Array<ScheduledJob>);
 
-export type GetAllJobsJobsJobsGetError = unknown;
+export type GetAllJobsError = unknown;

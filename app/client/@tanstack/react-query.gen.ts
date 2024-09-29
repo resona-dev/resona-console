@@ -2,8 +2,8 @@
 
 import type { Options } from '@hey-api/client-fetch';
 import { queryOptions, type UseMutationOptions } from '@tanstack/react-query';
-import type { CreateOneTimeJobJobsJobsOneTimePostData, CreateOneTimeJobJobsJobsOneTimePostError, CreateOneTimeJobJobsJobsOneTimePostResponse, CreateCronJobJobsJobsCronPostData, CreateCronJobJobsJobsCronPostError, CreateCronJobJobsJobsCronPostResponse, GetJobJobsJobsJobIdGetData, RemoveJobJobsJobsJobIdDeleteData, RemoveJobJobsJobsJobIdDeleteError, RemoveJobJobsJobsJobIdDeleteResponse } from '../types.gen';
-import { client, createOneTimeJobJobsJobsOneTimePost, createCronJobJobsJobsCronPost, getJobJobsJobsJobIdGet, removeJobJobsJobsJobIdDelete, getAllJobsJobsJobsGet } from '../services.gen';
+import type { CreateOneTimeJobData, CreateOneTimeJobError, CreateOneTimeJobResponse, CreateCronJobJobsCronPostData, CreateCronJobJobsCronPostError, CreateCronJobJobsCronPostResponse, GetJobJobsJobIdGetData, RemoveJobJobsJobIdDeleteData, RemoveJobJobsJobIdDeleteError, RemoveJobJobsJobIdDeleteResponse } from '../types.gen';
+import { client, createOneTimeJob, createCronJobJobsCronPost, getJobJobsJobIdGet, removeJobJobsJobIdDelete, getAllJobs } from '../services.gen';
 
 type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -32,25 +32,25 @@ const createQueryKey = <TOptions extends Options>(id: string, options?: TOptions
     return params;
 };
 
-export const createOneTimeJobJobsJobsOneTimePostQueryKey = (options: Options<CreateOneTimeJobJobsJobsOneTimePostData>) => [
-    createQueryKey("createOneTimeJobJobsJobsOneTimePost", options)
+export const createOneTimeJobQueryKey = (options: Options<CreateOneTimeJobData>) => [
+    createQueryKey("createOneTimeJob", options)
 ];
 
-export const createOneTimeJobJobsJobsOneTimePostOptions = (options: Options<CreateOneTimeJobJobsJobsOneTimePostData>) => { return queryOptions({
+export const createOneTimeJobOptions = (options: Options<CreateOneTimeJobData>) => { return queryOptions({
     queryFn: async ({ queryKey }) => {
-        const { data } = await createOneTimeJobJobsJobsOneTimePost({
+        const { data } = await createOneTimeJob({
             ...options,
             ...queryKey[0],
             throwOnError: true
         });
         return data;
     },
-    queryKey: createOneTimeJobJobsJobsOneTimePostQueryKey(options)
+    queryKey: createOneTimeJobQueryKey(options)
 }); };
 
-export const createOneTimeJobJobsJobsOneTimePostMutation = () => { const mutationOptions: UseMutationOptions<CreateOneTimeJobJobsJobsOneTimePostResponse, CreateOneTimeJobJobsJobsOneTimePostError, Options<CreateOneTimeJobJobsJobsOneTimePostData>> = {
+export const createOneTimeJobMutation = () => { const mutationOptions: UseMutationOptions<CreateOneTimeJobResponse, CreateOneTimeJobError, Options<CreateOneTimeJobData>> = {
     mutationFn: async (options) => {
-        const { data } = await createOneTimeJobJobsJobsOneTimePost({
+        const { data } = await createOneTimeJob({
             ...options,
             throwOnError: true
         });
@@ -58,25 +58,25 @@ export const createOneTimeJobJobsJobsOneTimePostMutation = () => { const mutatio
     }
 }; return mutationOptions; };
 
-export const createCronJobJobsJobsCronPostQueryKey = (options: Options<CreateCronJobJobsJobsCronPostData>) => [
-    createQueryKey("createCronJobJobsJobsCronPost", options)
+export const createCronJobJobsCronPostQueryKey = (options: Options<CreateCronJobJobsCronPostData>) => [
+    createQueryKey("createCronJobJobsCronPost", options)
 ];
 
-export const createCronJobJobsJobsCronPostOptions = (options: Options<CreateCronJobJobsJobsCronPostData>) => { return queryOptions({
+export const createCronJobJobsCronPostOptions = (options: Options<CreateCronJobJobsCronPostData>) => { return queryOptions({
     queryFn: async ({ queryKey }) => {
-        const { data } = await createCronJobJobsJobsCronPost({
+        const { data } = await createCronJobJobsCronPost({
             ...options,
             ...queryKey[0],
             throwOnError: true
         });
         return data;
     },
-    queryKey: createCronJobJobsJobsCronPostQueryKey(options)
+    queryKey: createCronJobJobsCronPostQueryKey(options)
 }); };
 
-export const createCronJobJobsJobsCronPostMutation = () => { const mutationOptions: UseMutationOptions<CreateCronJobJobsJobsCronPostResponse, CreateCronJobJobsJobsCronPostError, Options<CreateCronJobJobsJobsCronPostData>> = {
+export const createCronJobJobsCronPostMutation = () => { const mutationOptions: UseMutationOptions<CreateCronJobJobsCronPostResponse, CreateCronJobJobsCronPostError, Options<CreateCronJobJobsCronPostData>> = {
     mutationFn: async (options) => {
-        const { data } = await createCronJobJobsJobsCronPost({
+        const { data } = await createCronJobJobsCronPost({
             ...options,
             throwOnError: true
         });
@@ -84,25 +84,25 @@ export const createCronJobJobsJobsCronPostMutation = () => { const mutationOptio
     }
 }; return mutationOptions; };
 
-export const getJobJobsJobsJobIdGetQueryKey = (options: Options<GetJobJobsJobsJobIdGetData>) => [
-    createQueryKey("getJobJobsJobsJobIdGet", options)
+export const getJobJobsJobIdGetQueryKey = (options: Options<GetJobJobsJobIdGetData>) => [
+    createQueryKey("getJobJobsJobIdGet", options)
 ];
 
-export const getJobJobsJobsJobIdGetOptions = (options: Options<GetJobJobsJobsJobIdGetData>) => { return queryOptions({
+export const getJobJobsJobIdGetOptions = (options: Options<GetJobJobsJobIdGetData>) => { return queryOptions({
     queryFn: async ({ queryKey }) => {
-        const { data } = await getJobJobsJobsJobIdGet({
+        const { data } = await getJobJobsJobIdGet({
             ...options,
             ...queryKey[0],
             throwOnError: true
         });
         return data;
     },
-    queryKey: getJobJobsJobsJobIdGetQueryKey(options)
+    queryKey: getJobJobsJobIdGetQueryKey(options)
 }); };
 
-export const removeJobJobsJobsJobIdDeleteMutation = () => { const mutationOptions: UseMutationOptions<RemoveJobJobsJobsJobIdDeleteResponse, RemoveJobJobsJobsJobIdDeleteError, Options<RemoveJobJobsJobsJobIdDeleteData>> = {
+export const removeJobJobsJobIdDeleteMutation = () => { const mutationOptions: UseMutationOptions<RemoveJobJobsJobIdDeleteResponse, RemoveJobJobsJobIdDeleteError, Options<RemoveJobJobsJobIdDeleteData>> = {
     mutationFn: async (options) => {
-        const { data } = await removeJobJobsJobsJobIdDelete({
+        const { data } = await removeJobJobsJobIdDelete({
             ...options,
             throwOnError: true
         });
@@ -110,18 +110,18 @@ export const removeJobJobsJobsJobIdDeleteMutation = () => { const mutationOption
     }
 }; return mutationOptions; };
 
-export const getAllJobsJobsJobsGetQueryKey = (options?: Options) => [
-    createQueryKey("getAllJobsJobsJobsGet", options)
+export const getAllJobsQueryKey = (options?: Options) => [
+    createQueryKey("getAllJobs", options)
 ];
 
-export const getAllJobsJobsJobsGetOptions = (options?: Options) => { return queryOptions({
+export const getAllJobsOptions = (options?: Options) => { return queryOptions({
     queryFn: async ({ queryKey }) => {
-        const { data } = await getAllJobsJobsJobsGet({
+        const { data } = await getAllJobs({
             ...options,
             ...queryKey[0],
             throwOnError: true
         });
         return data;
     },
-    queryKey: getAllJobsJobsJobsGetQueryKey(options)
+    queryKey: getAllJobsQueryKey(options)
 }); };
