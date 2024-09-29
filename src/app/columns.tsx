@@ -9,7 +9,7 @@ import {
   MoreHorizontal,
 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/src/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,9 +17,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ScheduledJob } from "./client/types.gen";
-import { Badge } from "@/components/ui/badge";
+} from "@/src/components/ui/dropdown-menu";
+import { ScheduledJob } from "../client/types.gen";
+import { Badge } from "@/src/components/ui/badge";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 
 export const columns: ColumnDef<ScheduledJob>[] = [

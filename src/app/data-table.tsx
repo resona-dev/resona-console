@@ -19,16 +19,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+} from "@/src/components/ui/table";
+import { Button } from "@/src/components/ui/button";
 import React from "react";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/src/components/ui/input";
 import { DataTablePagination } from "./pagination-controls";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+} from "@/src/components/ui/collapsible";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import { ChevronDown } from "lucide-react";
 
@@ -98,20 +98,20 @@ export function DataTable<TData, TValue>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                      <TableRow
-                        className="cursor-pointer [&[aria-expanded=true]_svg.chevron]:rotate-180"
-                        key={row.id}
-                        data-state={row.getIsSelected() && "selected"}
-                      >
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </TableCell>
-                        ))}
-                      </TableRow>
+                <TableRow
+                  className="cursor-pointer [&[aria-expanded=true]_svg.chevron]:rotate-180"
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
               ))
             ) : (
               <TableRow>

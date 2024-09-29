@@ -1,6 +1,6 @@
 "use client";
 
-import { client } from "./client/services.gen";
+import { client } from "../client/services.gen";
 import {
   QueryClient,
   QueryClientProvider,
@@ -8,11 +8,11 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/src/components/ui/button";
 import {
   createOneTimeJobMutation,
   getAllJobsOptions,
-} from "./client/@tanstack/react-query.gen";
+} from "../client/@tanstack/react-query.gen";
 import { DataTable } from "./data-table";
 import { columns } from "./columns";
 
