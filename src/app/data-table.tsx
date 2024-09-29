@@ -19,27 +19,21 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/src/components/ui/table";
-import { Button } from "@/src/components/ui/button";
+} from "@/components/ui/table";
 import React from "react";
-import { Input } from "@/src/components/ui/input";
+import { Input } from "@/components/ui/input";
 import { DataTablePagination } from "./pagination-controls";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/src/components/ui/collapsible";
-import { CaretSortIcon } from "@radix-ui/react-icons";
-import { ChevronDown } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  onRowClick?: (row: TData) => void;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  onRowClick,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([
     { id: "next_run_time", desc: true },
@@ -75,7 +69,7 @@ export function DataTable<TData, TValue>({
           className="max-w-sm"
         />
       </div>
-      <div className="rounded-md border">
+      <div>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -100,6 +94,11 @@ export function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   className="cursor-pointer [&[aria-expanded=true]_svg.chevron]:rotate-180"
+                  onClick={(event) => {
+                    onRowClick?.(row.original);
+                    table.resetRowSelection();
+                    row.toggleSelected();
+                  }}
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
