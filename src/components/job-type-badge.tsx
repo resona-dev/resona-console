@@ -3,7 +3,7 @@ import { TriggerType } from "@/client/types.gen";
 
 export interface JobTypeBadgeProps
   extends React.HTMLAttributes<HTMLDivElement> {
-  type: TriggerType;
+  type: TriggerType | string;
 }
 
 export function JobTypeBadge({
