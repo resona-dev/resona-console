@@ -82,6 +82,7 @@ export function JobContextMenu({
           size="icon"
           variant={variant ?? "outline"}
           className={cn("h-8 w-8 cursor-pointer", className)}
+          onClick={(event) => event.stopPropagation()}
         >
           <MoreVertical className="h-3.5 w-3.5" />
           <span className="sr-only">More</span>
@@ -96,7 +97,14 @@ export function JobContextMenu({
         </DropdownMenuItem>
         <DropdownMenuItem
           className="cursor-pointer"
-          onClick={job.status === "paused" ? onResume : onPause}
+          onClick={(event) => {
+            event.stopPropagation();
+            if (job.status === "paused") {
+              onResume();
+            } else {
+              onPause();
+            }
+          }}
         >
           {job.status === "paused" ? (
             <>
@@ -113,7 +121,10 @@ export function JobContextMenu({
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="cursor-pointer focus:bg-destructive focus:text-destructive-foreground"
-          onClick={onRemove}
+          onClick={(event) => {
+            event.stopPropagation();
+            onRemove();
+          }}
         >
           <TrashIcon className="h-4 w-4 mr-2" />
           Delete
