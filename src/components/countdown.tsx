@@ -31,25 +31,31 @@ export function Countdown({
 
   React.useEffect(() => {
     let interval: NodeJS.Timeout;
-    let { interval: updateInterval, timeout } =
+    let timeout: NodeJS.Timeout;
+    let { interval: updateInterval, timeout: timeoutMs } =
       determineUpdateInterval(targetTime);
 
-    setTimeout(() => {
+    timeout = setTimeout(() => {
       interval = setInterval(() => {
         setTimeDiffString(remainingTimeString(targetTime));
-        const { interval: newInterval } =
-          determineUpdateInterval(targetTime);
+        const { interval: newInterval } = determineUpdateInterval(targetTime);
         if (newInterval !== updateInterval) {
           clearInterval(interval);
-          interval = setInterval(() => {
-            setTimeDiffString(remainingTimeString(targetTime));
-          }, newInterval);
-          updateInterval = newInterval;
+          // The timeout makes sure all countdowns update at the same time
+          timeout = setTimeout(() => {
+            interval = setInterval(() => {
+              setTimeDiffString(remainingTimeString(targetTime));
+            }, newInterval);
+            updateInterval = newInterval;
+          }, Date.now() % 1000);
         }
       }, 1000);
-    }, timeout);
+    }, timeoutMs);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
   }, [targetTime]);
 
   return (
