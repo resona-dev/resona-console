@@ -8,80 +8,35 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Button } from "./ui/button";
-import {
-  Copy,
-  MoreVertical,
-  ChevronLeft,
-  ChevronRight,
-  Edit,
-  Edit2Icon,
-  PauseIcon,
-  TrashIcon,
-  PlayIcon,
-} from "lucide-react";
+import { Copy, ChevronLeft, ChevronRight } from "lucide-react";
 import { Countdown } from "./countdown";
 import { JobStatusBadge } from "./job-status-badge";
 import { Pagination, PaginationContent, PaginationItem } from "./ui/pagination";
 import { JobTypeBadge } from "./job-type-badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
 import { Separator } from "./ui/separator";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  getAllJobsQueryKey,
-  pauseJobMutation,
-  removeJobMutation,
-  resumeJobMutation,
-} from "@/client/@tanstack/react-query.gen";
+import { JobContextMenu } from "./job-context-menu";
+import { useQueryClient } from "@tanstack/react-query";
+import { getAllJobsQueryKey } from "@/client/@tanstack/react-query.gen";
 
 export interface JobCardProps extends React.HTMLAttributes<HTMLDivElement> {
-  job: ScheduledJob;
+  jobId: string | undefined | null;
 }
 
-export function JobCard({ className, job, ...props }: JobCardProps) {
+export function JobCard({ className, jobId, ...props }: JobCardProps) {
   const queryClient = useQueryClient();
+  const job = queryClient
+    .getQueryData<ScheduledJob[]>(getAllJobsQueryKey())
+    ?.find((j) => j.id === jobId);
 
-  const onPause = async () => {
-    onPauseJobMutation.mutate({ path: { job_id: job.id } });
-  };
-
-  const onPauseJobMutation = useMutation({
-    ...pauseJobMutation(),
-    onError: (error) => console.log(error),
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: getAllJobsQueryKey() });
-    },
-  });
-
-  const onResume = async () => {
-    onResumeJobMutation.mutate({ path: { job_id: job.id } });
-  };
-
-  const onResumeJobMutation = useMutation({
-    ...resumeJobMutation(),
-    onError: (error) => console.log(error),
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: getAllJobsQueryKey() });
-    },
-  });
-
-  const onRemove = async () => {
-    onRemoveJobMutation.mutate({ path: { job_id: job.id } });
-  };
-
-  const onRemoveJobMutation = useMutation({
-    ...removeJobMutation(),
-    onError: (error) => console.log(error),
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: getAllJobsQueryKey() });
-    },
-  });
+  if (!job) {
+    return (
+      <Card className="overflow-hidden" {...props}>
+        <CardContent className="flex justify-center items-center p-32">
+          Please select a Job to view Details.
+        </CardContent>
+      </Card>
+    );
+  }
 
   let cronExpression = "";
   if (job.trigger.type === "cron") {
@@ -90,7 +45,7 @@ export function JobCard({ className, job, ...props }: JobCardProps) {
   }
 
   return (
-    <Card className="overflow-hidden" x-chunk="dashboard-05-chunk-4" {...props}>
+    <Card className="overflow-hidden" {...props}>
       <CardHeader className="flex flex-row items-start bg-muted/50">
         <div className="grid gap-0.5">
           <CardTitle className="flex items-center gap-2 text-lg">
@@ -110,50 +65,7 @@ export function JobCard({ className, job, ...props }: JobCardProps) {
           </CardDescription>
         </div>
         <div className="ml-auto flex items-center gap-1">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                size="icon"
-                variant="outline"
-                className="h-8 w-8 cursor-pointer"
-              >
-                <MoreVertical className="h-3.5 w-3.5" />
-                <span className="sr-only">More</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer">
-                <Edit2Icon className="h-4 w-4 mr-2" />
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="cursor-pointer"
-                onClick={job.status === "paused" ? onResume : onPause}
-              >
-                {job.status === "paused" ? (
-                  <>
-                    <PlayIcon className="h-4 w-4 mr-2" />
-                    Resume
-                  </>
-                ) : (
-                  <>
-                    <PauseIcon className="h-4 w-4 mr-2" />
-                    Pause
-                  </>
-                )}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="cursor-pointer focus:bg-destructive focus:text-destructive-foreground"
-                onClick={onRemove}
-              >
-                <TrashIcon className="h-4 w-4 mr-2" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <JobContextMenu job={job} />
         </div>
       </CardHeader>
       <CardContent className="p-6 text-sm">
@@ -173,10 +85,16 @@ export function JobCard({ className, job, ...props }: JobCardProps) {
             <li className="flex items-center justify-between">
               <span className="text-muted-foreground">Next Run Time</span>
               <div>
-                <span>{job.next_run_time}</span>
-                <span className="text-muted-foreground block text-right">
-                  in <Countdown targetTime={job.next_run_time!} />
-                </span>
+                {job.next_run_time ? (
+                  <>
+                    <span>{job.next_run_time}</span>
+                    <span className="text-muted-foreground block text-right">
+                      in <Countdown targetTime={job.next_run_time!} />
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-muted-foreground">N/A</span>
+                )}
               </div>
             </li>
           </ul>

@@ -38,14 +38,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ScheduledJob } from "@/client/types.gen";
 import { JobCard } from "@/components/job-card";
 
 client.setConfig({ baseUrl: "http://127.0.0.1:8000/" });
@@ -64,7 +62,7 @@ export default function App() {
 function Dashboard() {
   const queryClient = useQueryClient();
   const { isLoading, error, data: jobs } = useQuery({ ...getAllJobsOptions() });
-  const [selectedJob, setSelectedJob] = React.useState<ScheduledJob | null>();
+  const [selectedJobId, setSelectedJobId] = React.useState<string | null>();
 
   const onCreateCallback = async () => {
     addCallbackMutation.mutate({
@@ -76,7 +74,7 @@ function Dashboard() {
           body: { message: "Hello World", timestamp: new Date().toISOString() },
         },
         trigger: {
-          delay: 500,
+          cron: "* * * * *",
         },
       },
     });
@@ -172,7 +170,7 @@ function Dashboard() {
                 className="overflow-hidden rounded-full ml-auto"
               >
                 <Image
-                  src="/placeholder-user.jpg"
+                  src=""
                   width={36}
                   height={36}
                   alt="Avatar"
@@ -207,49 +205,27 @@ function Dashboard() {
                 </CardFooter>
               </Card>
             </div>
-            <Tabs defaultValue="one-time">
-              <div className="flex items-center">
-                <TabsList>
-                  <TabsTrigger value="one-time">One Time Jobs</TabsTrigger>
-                  <TabsTrigger value="cron">Cron Jobs</TabsTrigger>
-                </TabsList>
-              </div>
-              <TabsContent value="one-time">
-                <Card x-chunk="dashboard-05-chunk-3">
-                  <CardHeader className="px-7">
-                    <CardTitle>One Time Jobs</CardTitle>
-                    <CardDescription>
-                      Callbacks that are scheduled to run only once. They may
-                      have been scheduled by calling the API or by using the
-                      dashboard.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <DataTable
-                      columns={columns}
-                      data={jobs ?? []}
-                      onRowClick={(job) =>
-                        setSelectedJob(job.id == selectedJob?.id ? null : job)
-                      }
-                      isLoading={isLoading}
-                    ></DataTable>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              <TabsContent value="cron"></TabsContent>
-            </Tabs>
+            <Card x-chunk="dashboard-05-chunk-3">
+              <CardHeader className="px-7">
+                <CardTitle>Jobs</CardTitle>
+                <CardDescription>
+                  All currently registered jobs. They may have been scheduled by
+                  calling the API or by using the dashboard.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <DataTable
+                  columns={columns}
+                  data={jobs ?? []}
+                  onRowClick={(job) =>
+                    setSelectedJobId(job.id == selectedJobId ? null : job.id)
+                  }
+                  isLoading={isLoading}
+                ></DataTable>
+              </CardContent>
+            </Card>
           </div>
-          <div>
-            {selectedJob ? (
-              <JobCard job={selectedJob} />
-            ) : (
-              <Card className="overflow-hidden" x-chunk="dashboard-05-chunk-4">
-                <CardContent className="flex justify-center items-center p-32">
-                  Please select a Job to view Details.
-                </CardContent>
-              </Card>
-            )}
-          </div>
+          <JobCard jobId={selectedJobId} x-chunk="dashboard-05-chunk-4" />
         </main>
       </div>
     </div>
