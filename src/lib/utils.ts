@@ -44,7 +44,7 @@ export function remainingTimeString(time: Date | string | number) {
     newTimeDiffString += `${seconds}s`;
   }
   if (newTimeDiffString === "") {
-    newTimeDiffString = "less than a second";
+    newTimeDiffString = "< 1s";
   }
 
   return newTimeDiffString;

@@ -10,8 +10,9 @@ import {
 } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
-  createOneTimeJobMutation,
+  createJobMutation,
   getAllJobsOptions,
+  getAllJobsQueryKey,
 } from "../client/@tanstack/react-query.gen";
 import { DataTable } from "./data-table";
 import { columns } from "./columns";
@@ -61,6 +62,7 @@ export default function App() {
 }
 
 function Dashboard() {
+  const queryClient = useQueryClient();
   const { isLoading, error, data: jobs } = useQuery({ ...getAllJobsOptions() });
   const [selectedJob, setSelectedJob] = React.useState<ScheduledJob | null>();
 
@@ -73,14 +75,19 @@ function Dashboard() {
           headers: { "Content-Type": "application/json" },
           body: { message: "Hello World", timestamp: new Date().toISOString() },
         },
-        delay: 500,
+        trigger: {
+          delay: 500,
+        },
       },
     });
   };
 
   const addCallbackMutation = useMutation({
-    ...createOneTimeJobMutation(),
+    ...createJobMutation(),
     onError: (error) => console.log(error),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: getAllJobsQueryKey() });
+    },
   });
 
   if (isLoading) return <div>Loading...</div>;
