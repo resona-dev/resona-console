@@ -23,17 +23,20 @@ import {
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { DataTablePagination } from "./pagination-controls";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   onRowClick?: (row: TData) => void;
+  isLoading: boolean;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   onRowClick,
+  isLoading,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([
     { id: "next_run_time", desc: true },
@@ -112,13 +115,25 @@ export function DataTable<TData, TValue>({
                   ))}
                 </TableRow>
               ))
+            ) : isLoading ? (
+              [
+                Array(5)
+                  .fill(0)
+                  .map(() => (
+                    <TableRow>
+                      <TableCell colSpan={columns.length} className="px-0">
+                        <Skeleton className="h-8 rounded-none" />
+                      </TableCell>
+                    </TableRow>
+                  )),
+              ]
             ) : (
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center text-muted-foreground"
                 >
-                  No results.
+                  No Jobs scheduled
                 </TableCell>
               </TableRow>
             )}
