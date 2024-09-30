@@ -9,9 +9,7 @@ export type APIRequest = {
     body?: unknown;
 };
 
-export type CronJob = {
-    id?: (string | null);
-    request: APIRequest;
+export type CronTriggerCreate = {
     cron: string;
 };
 
@@ -19,21 +17,33 @@ export type HTTPValidationError = {
     detail?: Array<ValidationError>;
 };
 
-export type JobStatus = 'pending' | 'active' | 'paused';
-
-export type OneTimeJob = {
+export type JobCreate = {
     id?: (string | null);
     request: APIRequest;
+    trigger: (OneTimeTriggerCreate | CronTriggerCreate);
+};
+
+export type JobStatus = 'pending' | 'active' | 'paused';
+
+export type OneTimeTriggerCreate = {
     delay?: (number | null);
     date?: (string | null);
 };
 
 export type ScheduledJob = {
-    id?: (string | null);
-    request: APIRequest;
+    id: string;
     next_run_time: (string | null);
     status: JobStatus;
+    trigger: Trigger;
+    request: APIRequest;
 };
+
+export type Trigger = {
+    type: TriggerType;
+    fields: unknown;
+};
+
+export type TriggerType = 'one-time' | 'cron';
 
 export type ValidationError = {
     loc: Array<(string | number)>;
@@ -41,42 +51,54 @@ export type ValidationError = {
     type: string;
 };
 
-export type CreateOneTimeJobData = {
-    body: OneTimeJob;
-};
-
-export type CreateOneTimeJobResponse = (unknown);
-
-export type CreateOneTimeJobError = (HTTPValidationError);
-
-export type CreateCronJobJobsCronPostData = {
-    body: CronJob;
-};
-
-export type CreateCronJobJobsCronPostResponse = (unknown);
-
-export type CreateCronJobJobsCronPostError = (HTTPValidationError);
-
-export type GetJobJobsJobIdGetData = {
-    path: {
-        job_id: string;
-    };
-};
-
-export type GetJobJobsJobIdGetResponse = ((ScheduledJob | null));
-
-export type GetJobJobsJobIdGetError = (HTTPValidationError);
-
-export type RemoveJobJobsJobIdDeleteData = {
-    path: {
-        job_id: string;
-    };
-};
-
-export type RemoveJobJobsJobIdDeleteResponse = (unknown);
-
-export type RemoveJobJobsJobIdDeleteError = (HTTPValidationError);
-
 export type GetAllJobsResponse = (Array<ScheduledJob>);
 
 export type GetAllJobsError = unknown;
+
+export type CreateJobData = {
+    body: JobCreate;
+};
+
+export type CreateJobResponse = (ScheduledJob);
+
+export type CreateJobError = (HTTPValidationError);
+
+export type GetJobData = {
+    path: {
+        job_id: string;
+    };
+};
+
+export type GetJobResponse = (ScheduledJob);
+
+export type GetJobError = (HTTPValidationError);
+
+export type RemoveJobData = {
+    path: {
+        job_id: string;
+    };
+};
+
+export type RemoveJobResponse = (void);
+
+export type RemoveJobError = (HTTPValidationError);
+
+export type PauseJobData = {
+    path: {
+        job_id: string;
+    };
+};
+
+export type PauseJobResponse = (ScheduledJob);
+
+export type PauseJobError = (HTTPValidationError);
+
+export type ResumeJobData = {
+    path: {
+        job_id: string;
+    };
+};
+
+export type ResumeJobResponse = (ScheduledJob);
+
+export type ResumeJobError = (HTTPValidationError);

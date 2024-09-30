@@ -32,25 +32,8 @@ export const APIRequestSchema = {
     title: 'APIRequest'
 } as const;
 
-export const CronJobSchema = {
+export const CronTriggerCreateSchema = {
     properties: {
-        id: {
-            anyOf: [
-                {
-                    type: 'string'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Id',
-            examples: [
-                null
-            ]
-        },
-        request: {
-            '$ref': '#/components/schemas/APIRequest'
-        },
         cron: {
             type: 'string',
             title: 'Cron',
@@ -58,8 +41,8 @@ export const CronJobSchema = {
         }
     },
     type: 'object',
-    required: ['request', 'cron'],
-    title: 'CronJob'
+    required: ['cron'],
+    title: 'CronTriggerCreate'
 } as const;
 
 export const HTTPValidationErrorSchema = {
@@ -76,13 +59,7 @@ export const HTTPValidationErrorSchema = {
     title: 'HTTPValidationError'
 } as const;
 
-export const JobStatusSchema = {
-    type: 'string',
-    enum: ['pending', 'active', 'paused'],
-    title: 'JobStatus'
-} as const;
-
-export const OneTimeJobSchema = {
+export const JobCreateSchema = {
     properties: {
         id: {
             anyOf: [
@@ -101,6 +78,31 @@ export const OneTimeJobSchema = {
         request: {
             '$ref': '#/components/schemas/APIRequest'
         },
+        trigger: {
+            anyOf: [
+                {
+                    '$ref': '#/components/schemas/OneTimeTriggerCreate'
+                },
+                {
+                    '$ref': '#/components/schemas/CronTriggerCreate'
+                }
+            ],
+            title: 'Trigger'
+        }
+    },
+    type: 'object',
+    required: ['request', 'trigger'],
+    title: 'JobCreate'
+} as const;
+
+export const JobStatusSchema = {
+    type: 'string',
+    enum: ['pending', 'active', 'paused'],
+    title: 'JobStatus'
+} as const;
+
+export const OneTimeTriggerCreateSchema = {
+    properties: {
         delay: {
             anyOf: [
                 {
@@ -126,28 +128,14 @@ export const OneTimeJobSchema = {
         }
     },
     type: 'object',
-    required: ['request'],
-    title: 'OneTimeJob'
+    title: 'OneTimeTriggerCreate'
 } as const;
 
 export const ScheduledJobSchema = {
     properties: {
         id: {
-            anyOf: [
-                {
-                    type: 'string'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Id',
-            examples: [
-                null
-            ]
-        },
-        request: {
-            '$ref': '#/components/schemas/APIRequest'
+            type: 'string',
+            title: 'Id'
         },
         next_run_time: {
             anyOf: [
@@ -163,11 +151,40 @@ export const ScheduledJobSchema = {
         },
         status: {
             '$ref': '#/components/schemas/JobStatus'
+        },
+        trigger: {
+            '$ref': '#/components/schemas/Trigger'
+        },
+        request: {
+            '$ref': '#/components/schemas/APIRequest'
         }
     },
     type: 'object',
-    required: ['request', 'next_run_time', 'status'],
+    required: ['id', 'next_run_time', 'status', 'trigger', 'request'],
     title: 'ScheduledJob'
+} as const;
+
+export const TriggerSchema = {
+    properties: {
+        type: {
+            '$ref': '#/components/schemas/TriggerType'
+        },
+        fields: {
+            title: 'Fields',
+            examples: [
+                {}
+            ]
+        }
+    },
+    type: 'object',
+    required: ['type', 'fields'],
+    title: 'Trigger'
+} as const;
+
+export const TriggerTypeSchema = {
+    type: 'string',
+    enum: ['one-time', 'cron'],
+    title: 'TriggerType'
 } as const;
 
 export const ValidationErrorSchema = {

@@ -2,8 +2,8 @@
 
 import type { Options } from '@hey-api/client-fetch';
 import { queryOptions, type UseMutationOptions } from '@tanstack/react-query';
-import type { CreateOneTimeJobData, CreateOneTimeJobError, CreateOneTimeJobResponse, CreateCronJobJobsCronPostData, CreateCronJobJobsCronPostError, CreateCronJobJobsCronPostResponse, GetJobJobsJobIdGetData, RemoveJobJobsJobIdDeleteData, RemoveJobJobsJobIdDeleteError, RemoveJobJobsJobIdDeleteResponse } from '../types.gen';
-import { client, createOneTimeJob, createCronJobJobsCronPost, getJobJobsJobIdGet, removeJobJobsJobIdDelete, getAllJobs } from '../services.gen';
+import { client, getAllJobs, createJob, getJob, removeJob, pauseJob, resumeJob } from '../services.gen';
+import type { CreateJobData, CreateJobError, CreateJobResponse, GetJobData, RemoveJobData, RemoveJobError, RemoveJobResponse, PauseJobData, PauseJobError, PauseJobResponse, ResumeJobData, ResumeJobError, ResumeJobResponse } from '../types.gen';
 
 type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -32,84 +32,6 @@ const createQueryKey = <TOptions extends Options>(id: string, options?: TOptions
     return params;
 };
 
-export const createOneTimeJobQueryKey = (options: Options<CreateOneTimeJobData>) => [
-    createQueryKey("createOneTimeJob", options)
-];
-
-export const createOneTimeJobOptions = (options: Options<CreateOneTimeJobData>) => { return queryOptions({
-    queryFn: async ({ queryKey }) => {
-        const { data } = await createOneTimeJob({
-            ...options,
-            ...queryKey[0],
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: createOneTimeJobQueryKey(options)
-}); };
-
-export const createOneTimeJobMutation = () => { const mutationOptions: UseMutationOptions<CreateOneTimeJobResponse, CreateOneTimeJobError, Options<CreateOneTimeJobData>> = {
-    mutationFn: async (options) => {
-        const { data } = await createOneTimeJob({
-            ...options,
-            throwOnError: true
-        });
-        return data;
-    }
-}; return mutationOptions; };
-
-export const createCronJobJobsCronPostQueryKey = (options: Options<CreateCronJobJobsCronPostData>) => [
-    createQueryKey("createCronJobJobsCronPost", options)
-];
-
-export const createCronJobJobsCronPostOptions = (options: Options<CreateCronJobJobsCronPostData>) => { return queryOptions({
-    queryFn: async ({ queryKey }) => {
-        const { data } = await createCronJobJobsCronPost({
-            ...options,
-            ...queryKey[0],
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: createCronJobJobsCronPostQueryKey(options)
-}); };
-
-export const createCronJobJobsCronPostMutation = () => { const mutationOptions: UseMutationOptions<CreateCronJobJobsCronPostResponse, CreateCronJobJobsCronPostError, Options<CreateCronJobJobsCronPostData>> = {
-    mutationFn: async (options) => {
-        const { data } = await createCronJobJobsCronPost({
-            ...options,
-            throwOnError: true
-        });
-        return data;
-    }
-}; return mutationOptions; };
-
-export const getJobJobsJobIdGetQueryKey = (options: Options<GetJobJobsJobIdGetData>) => [
-    createQueryKey("getJobJobsJobIdGet", options)
-];
-
-export const getJobJobsJobIdGetOptions = (options: Options<GetJobJobsJobIdGetData>) => { return queryOptions({
-    queryFn: async ({ queryKey }) => {
-        const { data } = await getJobJobsJobIdGet({
-            ...options,
-            ...queryKey[0],
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getJobJobsJobIdGetQueryKey(options)
-}); };
-
-export const removeJobJobsJobIdDeleteMutation = () => { const mutationOptions: UseMutationOptions<RemoveJobJobsJobIdDeleteResponse, RemoveJobJobsJobIdDeleteError, Options<RemoveJobJobsJobIdDeleteData>> = {
-    mutationFn: async (options) => {
-        const { data } = await removeJobJobsJobIdDelete({
-            ...options,
-            throwOnError: true
-        });
-        return data;
-    }
-}; return mutationOptions; };
-
 export const getAllJobsQueryKey = (options?: Options) => [
     createQueryKey("getAllJobs", options)
 ];
@@ -125,3 +47,107 @@ export const getAllJobsOptions = (options?: Options) => { return queryOptions({
     },
     queryKey: getAllJobsQueryKey(options)
 }); };
+
+export const createJobQueryKey = (options: Options<CreateJobData>) => [
+    createQueryKey("createJob", options)
+];
+
+export const createJobOptions = (options: Options<CreateJobData>) => { return queryOptions({
+    queryFn: async ({ queryKey }) => {
+        const { data } = await createJob({
+            ...options,
+            ...queryKey[0],
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: createJobQueryKey(options)
+}); };
+
+export const createJobMutation = () => { const mutationOptions: UseMutationOptions<CreateJobResponse, CreateJobError, Options<CreateJobData>> = {
+    mutationFn: async (options) => {
+        const { data } = await createJob({
+            ...options,
+            throwOnError: true
+        });
+        return data;
+    }
+}; return mutationOptions; };
+
+export const getJobQueryKey = (options: Options<GetJobData>) => [
+    createQueryKey("getJob", options)
+];
+
+export const getJobOptions = (options: Options<GetJobData>) => { return queryOptions({
+    queryFn: async ({ queryKey }) => {
+        const { data } = await getJob({
+            ...options,
+            ...queryKey[0],
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getJobQueryKey(options)
+}); };
+
+export const removeJobMutation = () => { const mutationOptions: UseMutationOptions<RemoveJobResponse, RemoveJobError, Options<RemoveJobData>> = {
+    mutationFn: async (options) => {
+        const { data } = await removeJob({
+            ...options,
+            throwOnError: true
+        });
+        return data;
+    }
+}; return mutationOptions; };
+
+export const pauseJobQueryKey = (options: Options<PauseJobData>) => [
+    createQueryKey("pauseJob", options)
+];
+
+export const pauseJobOptions = (options: Options<PauseJobData>) => { return queryOptions({
+    queryFn: async ({ queryKey }) => {
+        const { data } = await pauseJob({
+            ...options,
+            ...queryKey[0],
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: pauseJobQueryKey(options)
+}); };
+
+export const pauseJobMutation = () => { const mutationOptions: UseMutationOptions<PauseJobResponse, PauseJobError, Options<PauseJobData>> = {
+    mutationFn: async (options) => {
+        const { data } = await pauseJob({
+            ...options,
+            throwOnError: true
+        });
+        return data;
+    }
+}; return mutationOptions; };
+
+export const resumeJobQueryKey = (options: Options<ResumeJobData>) => [
+    createQueryKey("resumeJob", options)
+];
+
+export const resumeJobOptions = (options: Options<ResumeJobData>) => { return queryOptions({
+    queryFn: async ({ queryKey }) => {
+        const { data } = await resumeJob({
+            ...options,
+            ...queryKey[0],
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: resumeJobQueryKey(options)
+}); };
+
+export const resumeJobMutation = () => { const mutationOptions: UseMutationOptions<ResumeJobResponse, ResumeJobError, Options<ResumeJobData>> = {
+    mutationFn: async (options) => {
+        const { data } = await resumeJob({
+            ...options,
+            throwOnError: true
+        });
+        return data;
+    }
+}; return mutationOptions; };
