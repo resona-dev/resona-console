@@ -9,6 +9,14 @@ export type APIRequest = {
     body?: unknown;
 };
 
+export type APIResponse = {
+    status_code: number;
+    headers?: {
+        [key: string]: (string);
+    };
+    body?: unknown;
+};
+
 export type CronTriggerCreate = {
     cron: string;
 };
@@ -19,11 +27,18 @@ export type HTTPValidationError = {
 
 export type JobCreate = {
     id?: (string | null);
+    name?: (string | null);
     request: APIRequest;
     trigger: (OneTimeTriggerCreate | CronTriggerCreate);
 };
 
-export type JobStatus = 'pending' | 'active' | 'paused';
+export type JobResult = {
+    completed_at: string;
+    error_message?: (string | null);
+    response: APIResponse;
+};
+
+export type JobStatus = 'pending' | 'active' | 'paused' | 'completed-successful' | 'completed-request-error' | 'completed-response-error' | 'completed-warning';
 
 export type OneTimeTriggerCreate = {
     delay?: (number | null);
@@ -32,10 +47,13 @@ export type OneTimeTriggerCreate = {
 
 export type ScheduledJob = {
     id: string;
-    next_run_time: (string | null);
+    name?: (string | null);
+    created_at: string;
+    next_run_time?: (string | null);
     status: JobStatus;
     trigger: Trigger;
     request: APIRequest;
+    result?: (JobResult | null);
 };
 
 export type Trigger = {
@@ -62,6 +80,10 @@ export type CreateJobData = {
 export type CreateJobResponse = (ScheduledJob);
 
 export type CreateJobError = (HTTPValidationError);
+
+export type GetAllCompletedJobsResponse = (Array<ScheduledJob>);
+
+export type GetAllCompletedJobsError = unknown;
 
 export type GetJobData = {
     path: {

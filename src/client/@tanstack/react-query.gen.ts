@@ -2,7 +2,7 @@
 
 import type { Options } from '@hey-api/client-fetch';
 import { queryOptions, type UseMutationOptions } from '@tanstack/react-query';
-import { client, getAllJobs, createJob, getJob, removeJob, pauseJob, resumeJob } from '../services.gen';
+import { client, getAllJobs, createJob, getAllCompletedJobs, getJob, removeJob, pauseJob, resumeJob } from '../services.gen';
 import type { CreateJobData, CreateJobError, CreateJobResponse, GetJobData, RemoveJobData, RemoveJobError, RemoveJobResponse, PauseJobData, PauseJobError, PauseJobResponse, ResumeJobData, ResumeJobError, ResumeJobResponse } from '../types.gen';
 
 type QueryKey<TOptions extends Options> = [
@@ -73,6 +73,22 @@ export const createJobMutation = () => { const mutationOptions: UseMutationOptio
         return data;
     }
 }; return mutationOptions; };
+
+export const getAllCompletedJobsQueryKey = (options?: Options) => [
+    createQueryKey("getAllCompletedJobs", options)
+];
+
+export const getAllCompletedJobsOptions = (options?: Options) => { return queryOptions({
+    queryFn: async ({ queryKey }) => {
+        const { data } = await getAllCompletedJobs({
+            ...options,
+            ...queryKey[0],
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getAllCompletedJobsQueryKey(options)
+}); };
 
 export const getJobQueryKey = (options: Options<GetJobData>) => [
     createQueryKey("getJob", options)

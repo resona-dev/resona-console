@@ -32,6 +32,32 @@ export const APIRequestSchema = {
     title: 'APIRequest'
 } as const;
 
+export const APIResponseSchema = {
+    properties: {
+        status_code: {
+            type: 'integer',
+            title: 'Status Code'
+        },
+        headers: {
+            additionalProperties: {
+                type: 'string'
+            },
+            type: 'object',
+            title: 'Headers',
+            default: {}
+        },
+        body: {
+            title: 'Body',
+            examples: [
+                {}
+            ]
+        }
+    },
+    type: 'object',
+    required: ['status_code'],
+    title: 'APIResponse'
+} as const;
+
 export const CronTriggerCreateSchema = {
     properties: {
         cron: {
@@ -75,6 +101,20 @@ export const JobCreateSchema = {
                 null
             ]
         },
+        name: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Name',
+            examples: [
+                null
+            ]
+        },
         request: {
             '$ref': '#/components/schemas/APIRequest'
         },
@@ -87,7 +127,12 @@ export const JobCreateSchema = {
                     '$ref': '#/components/schemas/CronTriggerCreate'
                 }
             ],
-            title: 'Trigger'
+            title: 'Trigger',
+            examples: [
+                {
+                    delay: 1
+                }
+            ]
         }
     },
     type: 'object',
@@ -95,9 +140,36 @@ export const JobCreateSchema = {
     title: 'JobCreate'
 } as const;
 
+export const JobResultSchema = {
+    properties: {
+        completed_at: {
+            type: 'string',
+            format: 'date-time',
+            title: 'Completed At'
+        },
+        error_message: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Error Message'
+        },
+        response: {
+            '$ref': '#/components/schemas/APIResponse'
+        }
+    },
+    type: 'object',
+    required: ['completed_at', 'response'],
+    title: 'JobResult'
+} as const;
+
 export const JobStatusSchema = {
     type: 'string',
-    enum: ['pending', 'active', 'paused'],
+    enum: ['pending', 'active', 'paused', 'completed-successful', 'completed-request-error', 'completed-response-error', 'completed-warning'],
     title: 'JobStatus'
 } as const;
 
@@ -137,6 +209,22 @@ export const ScheduledJobSchema = {
             type: 'string',
             title: 'Id'
         },
+        name: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Name'
+        },
+        created_at: {
+            type: 'string',
+            format: 'date-time',
+            title: 'Created At'
+        },
         next_run_time: {
             anyOf: [
                 {
@@ -157,10 +245,20 @@ export const ScheduledJobSchema = {
         },
         request: {
             '$ref': '#/components/schemas/APIRequest'
+        },
+        result: {
+            anyOf: [
+                {
+                    '$ref': '#/components/schemas/JobResult'
+                },
+                {
+                    type: 'null'
+                }
+            ]
         }
     },
     type: 'object',
-    required: ['id', 'next_run_time', 'status', 'trigger', 'request'],
+    required: ['id', 'created_at', 'status', 'trigger', 'request'],
     title: 'ScheduledJob'
 } as const;
 
