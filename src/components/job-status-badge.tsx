@@ -11,21 +11,37 @@ export function JobStatusBadge({
   status,
   ...props
 }: JobStatusBadgeProps) {
-  const mapping = {
+  const variantMapping = {
     active: "success",
     paused: "info",
-    failed: "destructive",
     pending: "warning",
-    completed: "secondary",
+    "completed-request-error": "destructive",
+    "completed-response-error": "destructive",
+    "completed-successful": "success",
+  };
+
+  const contentMapping = {
+    active: "Active",
+    paused: "Paused",
+    pending: "Pending",
+    "completed-request-error": "Request Error",
+    "completed-response-error": "Response Error",
+    "completed-successful": "Successful",
   };
 
   const variant: any =
-    Object.entries(mapping).find(([key, value]) => key === status)?.[1] ??
-    "default";
+    Object.entries(variantMapping).find(
+      ([key, value]) => key === status
+    )?.[1] ?? "default";
+
+  const content: any =
+    Object.entries(contentMapping).find(
+      ([key, value]) => key === status
+    )?.[1] ?? "Unknown";
 
   return (
     <Badge variant={variant} {...props} className={className}>
-      {status}
+      {content}
     </Badge>
   );
 }

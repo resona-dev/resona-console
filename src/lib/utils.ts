@@ -1,3 +1,4 @@
+import { ScheduledJob } from "@/client/types.gen";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -48,4 +49,8 @@ export function remainingTimeString(time: Date | string | number) {
   }
 
   return newTimeDiffString;
+}
+
+export function isCompleted(job: ScheduledJob) {
+  return job.status.startsWith("completed");
 }

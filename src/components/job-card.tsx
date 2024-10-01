@@ -16,23 +16,41 @@ import { JobTypeBadge } from "./job-type-badge";
 import { Separator } from "./ui/separator";
 import { JobContextMenu } from "./job-context-menu";
 import { useQueryClient } from "@tanstack/react-query";
-import { getAllJobsQueryKey } from "@/client/@tanstack/react-query.gen";
+import {
+  getAllCompletedJobsQueryKey,
+  getAllJobsQueryKey,
+} from "@/client/@tanstack/react-query.gen";
+import { isCompleted } from "@/lib/utils";
 
 export interface JobCardProps extends React.HTMLAttributes<HTMLDivElement> {
   jobId: string | undefined | null;
 }
 
 export function JobCard({ className, jobId, ...props }: JobCardProps) {
+  if (!jobId) {
+    return (
+      <Card className="overflow-hidden" {...props}>
+        <CardContent className="flex justify-center items-center p-32">
+          Please select a Job to view Details.
+        </CardContent>
+      </Card>
+    );
+  }
+
   const queryClient = useQueryClient();
-  const job = queryClient
-    .getQueryData<ScheduledJob[]>(getAllJobsQueryKey())
-    ?.find((j) => j.id === jobId);
+  const job =
+    queryClient
+      .getQueryData<ScheduledJob[]>(getAllJobsQueryKey())
+      ?.find((j) => j.id === jobId) ??
+    queryClient
+      .getQueryData<ScheduledJob[]>(getAllCompletedJobsQueryKey())
+      ?.find((j) => j.id === jobId);
 
   if (!job) {
     return (
       <Card className="overflow-hidden" {...props}>
         <CardContent className="flex justify-center items-center p-32">
-          Please select a Job to view Details.
+          Job not found. Please refresh the page.
         </CardContent>
       </Card>
     );
@@ -64,9 +82,11 @@ export function JobCard({ className, jobId, ...props }: JobCardProps) {
             <JobStatusBadge status={job.status} />
           </CardDescription>
         </div>
-        <div className="ml-auto flex items-center gap-1">
-          <JobContextMenu job={job} />
-        </div>
+        {!isCompleted(job) && (
+          <div className="ml-auto flex items-center gap-1">
+            <JobContextMenu job={job} />
+          </div>
+        )}
       </CardHeader>
       <CardContent className="p-6 text-sm">
         <div className="grid gap-3">
@@ -82,22 +102,71 @@ export function JobCard({ className, jobId, ...props }: JobCardProps) {
                 <code>{cronExpression}</code>
               </li>
             )}
-            <li className="flex items-center justify-between">
-              <span className="text-muted-foreground">Next Run Time</span>
-              <div>
-                {job.next_run_time ? (
-                  <>
-                    <span>{job.next_run_time}</span>
-                    <span className="text-muted-foreground block text-right">
-                      in <Countdown targetTime={job.next_run_time!} />
+            {!isCompleted(job) && (
+              <li className="flex items-center justify-between">
+                <span className="text-muted-foreground">Next Run Time</span>
+                <div>
+                  {job.next_run_time ? (
+                    <>
+                      <span>
+                        {new Date(job.next_run_time).toLocaleString()}
+                      </span>
+                      <span className="text-muted-foreground block text-right">
+                        in <Countdown targetTime={job.next_run_time!} />
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-muted-foreground">N/A</span>
+                  )}
+                </div>
+              </li>
+            )}
+            {isCompleted(job) && (
+              <>
+                <li className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Completed At</span>
+                  <div>
+                    <span>
+                      {new Date(job.result?.completed_at!).toLocaleString()}
                     </span>
-                  </>
-                ) : (
-                  <span className="text-muted-foreground">N/A</span>
+                  </div>
+                </li>
+
+                {job.result?.error_message && (
+                  <li className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Error Message</span>
+                    <div>
+                      <span>{job.result?.error_message}</span>
+                    </div>
+                  </li>
                 )}
-              </div>
-            </li>
+              </>
+            )}
           </ul>
+          {isCompleted(job) && (
+            <>
+              <Separator className="my-2" />
+              <div className="font-semibold">Response</div>
+              <ul className="grid gap-3">
+                <li className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Status Code</span>
+                  <span>{job.result?.response.status_code}</span>
+                </li>
+                <li className="flex flex-col  justify-between">
+                  <span className="text-muted-foreground">Headers</span>
+                  <pre className="block">
+                    {JSON.stringify(job.result?.response.headers, null, 2)}
+                  </pre>
+                </li>
+                <li className="flex flex-col  justify-between">
+                  <span className="text-muted-foreground">Body</span>
+                  <pre className="block">
+                    {JSON.stringify(job.result?.response.body, null, 2)}
+                  </pre>
+                </li>
+              </ul>
+            </>
+          )}
           <Separator className="my-2" />
           <div className="font-semibold">Scheduled Request</div>
           <ul className="grid gap-3">
@@ -126,7 +195,10 @@ export function JobCard({ className, jobId, ...props }: JobCardProps) {
       </CardContent>
       <CardFooter className="flex flex-row items-center border-t bg-muted/50 px-6 py-3">
         <div className="text-xs text-muted-foreground">
-          Updated <time dateTime="2023-11-23">November 23, 2023</time>
+          Created{" "}
+          <time dateTime={job.created_at}>
+            {new Date(job.created_at).toLocaleString()}
+          </time>
         </div>
         <Pagination className="ml-auto mr-0 w-auto">
           <PaginationContent>
