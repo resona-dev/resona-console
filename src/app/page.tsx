@@ -11,11 +11,12 @@ import {
 import { Button } from "@/components/ui/button";
 import {
   createJobMutation,
+  getAllCompletedJobsOptions,
   getAllJobsOptions,
   getAllJobsQueryKey,
 } from "../client/@tanstack/react-query.gen";
-import { DataTable } from "./data-table";
-import { columns } from "./columns";
+import { DataTable } from "../components/table/data-table";
+import { columns, scheduledJobsConfig } from "../components/table/columns-scheduled";
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -45,6 +46,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { JobCard } from "@/components/job-card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  columnsCompleted,
+  completedJobsConfig,
+} from "@/components/table/columns-completed";
 
 client.setConfig({ baseUrl: "http://127.0.0.1:8000/" });
 const queryClient = new QueryClient();
@@ -62,6 +68,11 @@ export default function App() {
 function Dashboard() {
   const queryClient = useQueryClient();
   const { isLoading, error, data: jobs } = useQuery({ ...getAllJobsOptions() });
+  const {
+    isLoading: isLoadingCompletedJobs,
+    error: completedJobsError,
+    data: completedJobs,
+  } = useQuery({ ...getAllCompletedJobsOptions() });
   const [selectedJobId, setSelectedJobId] = React.useState<string | null>();
 
   const onCreateCallback = async () => {
@@ -205,25 +216,60 @@ function Dashboard() {
                 </CardFooter>
               </Card>
             </div>
-            <Card x-chunk="dashboard-05-chunk-3">
-              <CardHeader className="px-7">
-                <CardTitle>Jobs</CardTitle>
-                <CardDescription>
-                  All currently registered jobs. They may have been scheduled by
-                  calling the API or by using the dashboard.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <DataTable
-                  columns={columns}
-                  data={jobs ?? []}
-                  onRowClick={(job) =>
-                    setSelectedJobId(job.id == selectedJobId ? null : job.id)
-                  }
-                  isLoading={isLoading}
-                ></DataTable>
-              </CardContent>
-            </Card>
+            <Tabs defaultValue="scheduled">
+              <TabsList>
+                <TabsTrigger value="scheduled">Scheduled</TabsTrigger>
+                <TabsTrigger value="completed">Completed</TabsTrigger>
+              </TabsList>
+              <TabsContent value="scheduled">
+                <Card x-chunk="dashboard-05-chunk-3">
+                  <CardHeader className="px-7">
+                    <CardTitle>Scheduled Jobs</CardTitle>
+                    <CardDescription>
+                      All currently registered jobs. They may have been
+                      scheduled by calling the API or by using the dashboard.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <DataTable
+                      columns={columns}
+                      data={jobs ?? []}
+                      onRowClick={(job) =>
+                        setSelectedJobId(
+                          job.id == selectedJobId ? null : job.id
+                        )
+                      }
+                      isLoading={isLoading}
+                      config={scheduledJobsConfig}
+                    ></DataTable>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              <TabsContent value="completed">
+                <Card x-chunk="dashboard-05-chunk-3">
+                  <CardHeader className="px-7">
+                    <CardTitle>Scheduled Jobs</CardTitle>
+                    <CardDescription>
+                      All currently registered jobs. They may have been
+                      scheduled by calling the API or by using the dashboard.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <DataTable
+                      columns={columnsCompleted}
+                      data={completedJobs ?? []}
+                      onRowClick={(job) =>
+                        setSelectedJobId(
+                          job.id == selectedJobId ? null : job.id
+                        )
+                      }
+                      isLoading={isLoadingCompletedJobs}
+                      config={completedJobsConfig}
+                    ></DataTable>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
           </div>
           <JobCard jobId={selectedJobId} x-chunk="dashboard-05-chunk-4" />
         </main>

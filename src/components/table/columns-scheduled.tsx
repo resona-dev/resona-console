@@ -13,12 +13,14 @@ import {
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-import { JobStatus, ScheduledJob } from "../client/types.gen";
+import { JobStatus, ScheduledJob } from "@/client/types.gen";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import { JobStatusBadge } from "@/components/job-status-badge";
 import { Countdown } from "@/components/countdown";
 import { JobTypeBadge } from "@/components/job-type-badge";
 import { JobContextMenu } from "@/components/job-context-menu";
+import { getAllJobsQueryKey } from "@/client/@tanstack/react-query.gen";
+import { DataTableConfig } from "./data-table";
 
 export const columns: ColumnDef<ScheduledJob>[] = [
   {
@@ -78,9 +80,7 @@ export const columns: ColumnDef<ScheduledJob>[] = [
       const nextRunTime: string = row.getValue("next_run_time");
       if (nextRunTime === null) {
         return (
-          <>
-            <div className="text-muted-foreground h-10 content-center">N/A</div>
-          </>
+          <div className="text-muted-foreground h-10 content-center">N/A</div>
         );
       }
 
@@ -107,7 +107,7 @@ export const columns: ColumnDef<ScheduledJob>[] = [
   },
 ];
 
-export const statuses = [
+const statuses = [
   {
     value: "active",
     label: "Active",
@@ -125,7 +125,7 @@ export const statuses = [
   },
 ];
 
-export const triggerTypes = [
+const triggerTypes = [
   {
     value: "cron",
     label: "Cron",
@@ -137,3 +137,20 @@ export const triggerTypes = [
     icon: ArrowRightIcon,
   },
 ];
+
+export const scheduledJobsConfig: DataTableConfig = {
+  queryKey: getAllJobsQueryKey(),
+  initialSort: [{ id: "next_run_time", desc: true }],
+  filters: [
+    {
+      accessorKey: "type",
+      title: "Type",
+      options: triggerTypes,
+    },
+    {
+      accessorKey: "status",
+      title: "Status",
+      options: statuses,
+    },
+  ],
+};

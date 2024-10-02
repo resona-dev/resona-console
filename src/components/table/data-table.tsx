@@ -27,9 +27,22 @@ import React from "react";
 import { DataTablePagination } from "./pagination-controls";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DataTableToolbar } from "./data-table-toolbar";
+import { FacetedFilterOption } from "./faceted-filter";
+import { QueryKey } from "@tanstack/react-query";
+
+export interface DataTableConfig {
+  queryKey?: QueryKey;
+  filters?: {
+    accessorKey: string;
+    title: string;
+    options: FacetedFilterOption[];
+  }[];
+  initialSort?: SortingState;
+}
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
+  config?: DataTableConfig;
   data: TData[];
   onRowClick?: (row: TData) => void;
   isLoading: boolean;
@@ -40,10 +53,11 @@ export function DataTable<TData, TValue>({
   data,
   onRowClick,
   isLoading,
+  config,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([
-    { id: "next_run_time", desc: true },
-  ]);
+  const [sorting, setSorting] = React.useState<SortingState>(
+    config?.initialSort ?? []
+  );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -69,9 +83,15 @@ export function DataTable<TData, TValue>({
     },
   });
 
+  console.log(sorting);
+
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} />
+      <DataTableToolbar
+        table={table}
+        filters={config?.filters}
+        queryKey={config?.queryKey}
+      />
       <div className="rounded-md border">
         <Table>
           <TableHeader>

@@ -30,8 +30,8 @@ export function JobCard({ className, jobId, ...props }: JobCardProps) {
   if (!jobId) {
     return (
       <Card className="overflow-hidden" {...props}>
-        <CardContent className="flex justify-center items-center p-32">
-          Please select a Job to view Details.
+        <CardContent className="flex justify-center items-center p-32 text-muted-foreground">
+          Select a Job to view details.
         </CardContent>
       </Card>
     );
@@ -49,7 +49,7 @@ export function JobCard({ className, jobId, ...props }: JobCardProps) {
   if (!job) {
     return (
       <Card className="overflow-hidden" {...props}>
-        <CardContent className="flex justify-center items-center p-32">
+        <CardContent className="flex justify-center items-center p-32 text-muted-foreground">
           Job not found. Please refresh the page.
         </CardContent>
       </Card>

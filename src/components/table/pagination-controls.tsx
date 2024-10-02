@@ -33,7 +33,7 @@ export function DataTablePagination<TData>({
           {Math.min(indexFirstRow + pagination.pageSize, table.getRowCount())}
         </strong>{" "}
         of <strong>{table.getRowCount()}</strong>{" "}
-        {table.getRowCount() > 1 ? "jobs" : "job"}
+        {table.getRowCount() !== 1 ? "jobs" : "job"}
       </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">

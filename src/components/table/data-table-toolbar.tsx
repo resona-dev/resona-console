@@ -4,18 +4,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { Table } from "@tanstack/react-table";
-import { DataTableFacetedFilter } from "./data-table-faceted-filter";
-import { statuses, triggerTypes } from "./columns";
+import { FacetedFilter, FacetedFilterOption } from "./faceted-filter";
 import { RefreshCwIcon } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
-import { getAllJobsQueryKey } from "@/client/@tanstack/react-query.gen";
+import { QueryKey, useQueryClient } from "@tanstack/react-query";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
+  queryKey?: QueryKey;
+  filters?: {
+    accessorKey: string;
+    title: string;
+    options: FacetedFilterOption[];
+  }[];
 }
 
 export function DataTableToolbar<TData>({
   table,
+  queryKey,
+  filters,
 }: DataTableToolbarProps<TData>) {
   const queryClient = useQueryClient();
   const isFiltered = table.getState().columnFilters.length > 0;
@@ -31,20 +37,14 @@ export function DataTableToolbar<TData>({
           }
           className="h-8 w-[150px] lg:w-[250px]"
         />
-        {table.getColumn("type") && (
-          <DataTableFacetedFilter
-            column={table.getColumn("type")}
-            title="Type"
-            options={triggerTypes}
+        {filters?.map((filter) => (
+          <FacetedFilter
+            key={filter.accessorKey}
+            column={table.getColumn(filter.accessorKey)}
+            title={filter.title}
+            options={filter.options}
           />
-        )}
-        {table.getColumn("status") && (
-          <DataTableFacetedFilter
-            column={table.getColumn("status")}
-            title="Status"
-            options={statuses}
-          />
-        )}
+        ))}
         {isFiltered && (
           <Button
             variant="ghost"
@@ -56,16 +56,18 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={(event) =>
-          queryClient.refetchQueries({ queryKey: getAllJobsQueryKey() })
-        }
-      >
-        <RefreshCwIcon className="mr-2 h-4 w-4"></RefreshCwIcon>
-        Refresh
-      </Button>
+      {queryKey && (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={(event) =>
+            queryClient.refetchQueries({ queryKey: queryKey })
+          }
+        >
+          <RefreshCwIcon className="mr-2 h-4 w-4"></RefreshCwIcon>
+          Refresh
+        </Button>
+      )}
     </div>
   );
 }
