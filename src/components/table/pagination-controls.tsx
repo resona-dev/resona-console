@@ -28,10 +28,14 @@ export function DataTablePagination<TData>({
     <div className="flex items-center justify-between px-2">
       <div className="flex-1 text-sm text-muted-foreground">
         Showing{" "}
-        <strong>
-          {indexFirstRow} - 
-          {Math.min(indexFirstRow + pagination.pageSize, table.getRowCount())}
-        </strong>{" "}
+        {table.getRowCount() > 0 ? (
+          <strong>
+            {indexFirstRow + 1} - 
+            {Math.min(indexFirstRow + pagination.pageSize, table.getRowCount())}
+          </strong>
+        ) : (
+          <strong>0</strong>
+        )}{" "}
         of <strong>{table.getRowCount()}</strong>{" "}
         {table.getRowCount() !== 1 ? "jobs" : "job"}
       </div>
