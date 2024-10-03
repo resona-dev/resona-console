@@ -166,7 +166,7 @@ function Dashboard() {
                 className="overflow-hidden rounded-full ml-auto"
               >
                 <Image
-                  src=""
+                  src="/user-avatar.png"
                   width={36}
                   height={36}
                   alt="Avatar"

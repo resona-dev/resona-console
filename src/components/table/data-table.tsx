@@ -135,15 +135,13 @@ export function DataTable<TData, TValue>({
               ))
             ) : isLoading ? (
               [
-                Array(5)
-                  .fill(0)
-                  .map(() => (
-                    <TableRow>
-                      <TableCell colSpan={columns.length} className="px-0">
-                        <Skeleton className="h-8 rounded-none" />
-                      </TableCell>
-                    </TableRow>
-                  )),
+                Array.from(Array(5).keys()).map((i) => (
+                  <TableRow key={i}>
+                    <TableCell colSpan={columns.length} className="px-0">
+                      <Skeleton className="h-8 rounded-none" />
+                    </TableCell>
+                  </TableRow>
+                )),
               ]
             ) : (
               <TableRow>
