@@ -83,8 +83,6 @@ export function DataTable<TData, TValue>({
     },
   });
 
-  console.log(sorting);
-
   return (
     <div className="space-y-4">
       <DataTableToolbar
