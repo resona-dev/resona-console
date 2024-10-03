@@ -4,23 +4,28 @@ import { client } from "../client/services.gen";
 import {
   QueryClient,
   QueryClientProvider,
-  useMutation,
   useQuery,
-  useQueryClient,
 } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
-  createJobMutation,
   getAllCompletedJobsOptions,
   getAllJobsOptions,
-  getAllJobsQueryKey,
 } from "../client/@tanstack/react-query.gen";
 import { DataTable } from "../components/table/data-table";
-import { columns, scheduledJobsConfig } from "../components/table/columns-scheduled";
+import {
+  columns,
+  scheduledJobsConfig,
+} from "../components/table/columns-scheduled";
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { PanelLeft, Settings, Home, Monitor } from "lucide-react";
+import {
+  PanelLeft,
+  Settings,
+  Home,
+  Monitor,
+  PlusIcon,
+} from "lucide-react";
 
 import {
   Card,
@@ -51,6 +56,11 @@ import {
   columnsCompleted,
   completedJobsConfig,
 } from "@/components/table/columns-completed";
+import {
+  Dialog,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { CreateJobDialog } from "@/components/create-job-dialog";
 
 client.setConfig({ baseUrl: "http://127.0.0.1:8000/" });
 const queryClient = new QueryClient();
@@ -66,7 +76,6 @@ export default function App() {
 }
 
 function Dashboard() {
-  const queryClient = useQueryClient();
   const { isLoading, error, data: jobs } = useQuery({ ...getAllJobsOptions() });
   const {
     isLoading: isLoadingCompletedJobs,
@@ -74,30 +83,6 @@ function Dashboard() {
     data: completedJobs,
   } = useQuery({ ...getAllCompletedJobsOptions() });
   const [selectedJobId, setSelectedJobId] = React.useState<string | null>();
-
-  const onCreateCallback = async () => {
-    addCallbackMutation.mutate({
-      body: {
-        request: {
-          url: "http://localhost:3000/api/callback",
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: { message: "Hello World", timestamp: new Date().toISOString() },
-        },
-        trigger: {
-          cron: "* * * * *",
-        },
-      },
-    });
-  };
-
-  const addCallbackMutation = useMutation({
-    ...createJobMutation(),
-    onError: (error) => console.log(error),
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: getAllJobsQueryKey() });
-    },
-  });
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -210,9 +195,14 @@ function Dashboard() {
                   </CardDescription>
                 </CardHeader>
                 <CardFooter>
-                  <Button onClick={onCreateCallback}>
-                    Create New Callback
-                  </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button>
+                        <PlusIcon className="h-4 w-4 mr-2" /> Create new Job
+                      </Button>
+                    </DialogTrigger>
+                    <CreateJobDialog />
+                  </Dialog>
                 </CardFooter>
               </Card>
             </div>
