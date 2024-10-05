@@ -58,28 +58,21 @@ export function DataTable<TData, TValue>({
   const [sorting, setSorting] = React.useState<SortingState>(
     config?.initialSort ?? []
   );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
 
   const table = useReactTable({
     data,
     columns,
     onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
+    globalFilterFn: "includesString",
     state: {
       sorting,
-      columnFilters,
-      columnVisibility,
+      columnVisibility: { name: false },
     },
   });
 
@@ -114,7 +107,7 @@ export function DataTable<TData, TValue>({
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
-                  className="cursor-pointer [&[aria-expanded=true]_svg.chevron]:rotate-180"
+                  className="cursor-pointer"
                   onClick={(event) => {
                     onRowClick?.(row.original);
                     table.resetRowSelection();
@@ -137,8 +130,16 @@ export function DataTable<TData, TValue>({
               [
                 Array.from(Array(5).keys()).map((i) => (
                   <TableRow key={i}>
-                    <TableCell colSpan={columns.length} className="px-0">
-                      <Skeleton className="h-8 rounded-none" />
+                    <TableCell colSpan={columns.length}>
+                      <div className="flex items-center space-x-4">
+                        <div className="space-y-2">
+                          <Skeleton className="h-4 w-[200px]" />
+                          <Skeleton className="h-4 w-[150px]" />
+                        </div>
+                        <Skeleton className="h-4 w-[150px]" />
+                        <Skeleton className="h-4 w-[150px]" />
+                        <Skeleton className="h-4 w-[150px]" />
+                      </div>
                     </TableCell>
                   </TableRow>
                 )),

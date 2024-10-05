@@ -5,9 +5,10 @@ import {
   ArrowDownIcon,
   ArrowRightIcon,
   ArrowUpIcon,
-  CheckCheckIcon,
-  CrossIcon,
-  Repeat1Icon,
+  CheckIcon,
+  CircleAlert,
+  CircleX,
+  RepeatIcon,
 } from "lucide-react";
 
 import * as React from "react";
@@ -16,13 +17,39 @@ import { CaretSortIcon } from "@radix-ui/react-icons";
 import { JobStatusBadge } from "@/components/job-status-badge";
 import { JobTypeBadge } from "@/components/job-type-badge";
 import { ScheduledJob, JobStatus } from "@/client";
-import { getAllCompletedJobsQueryKey } from "@/client/@tanstack/react-query.gen";
 import { DataTableConfig } from "./data-table";
 
 export const columnsCompleted: ColumnDef<ScheduledJob>[] = [
   {
     accessorKey: "id",
-    header: "Job ID",
+    header: "Job ID & Name",
+    cell: ({ row }) => {
+      const id: string = row.getValue("id");
+      const name = row.original.name;
+      if (!name) {
+        return (
+          <div className="flex items-center">
+            {id}
+            <div className="opacity-0">
+              <div>x</div>
+              <div>x</div>
+            </div>
+          </div>
+        );
+      }
+      return (
+        <div>
+          {id}
+          <div className="text-muted-foreground overflow-ellipsis">{name}</div>
+        </div>
+      );
+    },
+  },
+  {
+    id: "name",
+    accessorKey: "name",
+    header: "Name",
+    accessorFn: (originalRow) => originalRow.name?.toString() ?? "",
   },
   {
     id: "type",
@@ -82,19 +109,19 @@ export const columnsCompleted: ColumnDef<ScheduledJob>[] = [
 
 const statuses = [
   {
-    value: "successful",
+    value: "completed-successful",
     label: "Successful",
-    icon: CheckCheckIcon,
+    icon: CheckIcon,
   },
   {
-    value: "response-error",
+    value: "completed-response-error",
     label: "Response Error",
-    icon: CrossIcon,
+    icon: CircleAlert,
   },
   {
-    value: "request-error",
+    value: "completed-request-error",
     label: "Request Error",
-    icon: CrossIcon,
+    icon: CircleX,
   },
 ];
 
@@ -102,7 +129,7 @@ const triggerTypes = [
   {
     value: "cron",
     label: "Cron",
-    icon: Repeat1Icon,
+    icon: RepeatIcon,
   },
   {
     value: "one-time",

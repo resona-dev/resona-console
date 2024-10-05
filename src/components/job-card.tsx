@@ -8,7 +8,12 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Button } from "./ui/button";
-import { Copy, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Copy,
+  ChevronLeft,
+  ChevronRight,
+  SquareDashedMousePointer,
+} from "lucide-react";
 import { Countdown } from "./countdown";
 import { JobStatusBadge } from "./job-status-badge";
 import { Pagination, PaginationContent, PaginationItem } from "./ui/pagination";
@@ -31,8 +36,9 @@ export function JobCard({ className, job, ...props }: JobCardProps) {
   if (!job) {
     return (
       <Card className="overflow-hidden" {...props}>
-        <CardContent className="flex justify-center items-center p-32 text-muted-foreground">
-          Select a Job to view details.
+        <CardContent className="flex justify-center items-center p-32 text-muted-foreground flex-col gap-4">
+          <SquareDashedMousePointer className="h-12 w-12" />
+          <span className="text-center">Select a Job to view details.</span>
         </CardContent>
       </Card>
     );
@@ -203,22 +209,6 @@ export function JobCard({ className, job, ...props }: JobCardProps) {
             {new Date(jobData.created_at).toLocaleString()}
           </time>
         </div>
-        <Pagination className="ml-auto mr-0 w-auto">
-          <PaginationContent>
-            <PaginationItem>
-              <Button size="icon" variant="outline" className="h-6 w-6">
-                <ChevronLeft className="h-3.5 w-3.5" />
-                <span className="sr-only">Previous Job</span>
-              </Button>
-            </PaginationItem>
-            <PaginationItem>
-              <Button size="icon" variant="outline" className="h-6 w-6">
-                <ChevronRight className="h-3.5 w-3.5" />
-                <span className="sr-only">Next Job</span>
-              </Button>
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
       </CardFooter>
     </Card>
   );

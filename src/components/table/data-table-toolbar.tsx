@@ -23,17 +23,16 @@ export function DataTableToolbar<TData>({
   filters,
   refetch,
 }: DataTableToolbarProps<TData>) {
-  const isFiltered = table.getState().columnFilters.length > 0;
+  const isFiltered =
+    table.getState().columnFilters.length > 0 || table.getState().globalFilter;
 
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
         <Input
-          placeholder="Filter jobs..."
-          value={(table.getColumn("id")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("id")?.setFilterValue(event.target.value)
-          }
+          placeholder="Search ..."
+          value={table.getState().globalFilter ?? ""}
+          onChange={(event) => table.setGlobalFilter(event.target.value)}
           className="h-8 w-[150px] lg:w-[250px]"
         />
         {filters?.map((filter) => (
@@ -47,7 +46,10 @@ export function DataTableToolbar<TData>({
         {isFiltered && (
           <Button
             variant="ghost"
-            onClick={() => table.resetColumnFilters()}
+            onClick={() => {
+              table.resetColumnFilters();
+              table.resetGlobalFilter();
+            }}
             className="h-8 px-2 lg:px-3"
           >
             Reset

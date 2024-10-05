@@ -5,10 +5,10 @@ import {
   ArrowDownIcon,
   ArrowRightIcon,
   ArrowUpIcon,
-  CheckCheckIcon,
   LoaderIcon,
   PauseIcon,
-  Repeat1Icon,
+  PlayIcon,
+  RepeatIcon,
 } from "lucide-react";
 
 import * as React from "react";
@@ -19,16 +19,32 @@ import { JobStatusBadge } from "@/components/job-status-badge";
 import { Countdown } from "@/components/countdown";
 import { JobTypeBadge } from "@/components/job-type-badge";
 import { JobContextMenu } from "@/components/job-context-menu";
-import { getAllJobsQueryKey } from "@/client/@tanstack/react-query.gen";
 import { DataTableConfig } from "./data-table";
 
 export const columns: ColumnDef<ScheduledJob>[] = [
   {
     accessorKey: "id",
-    header: () => <div className="">Job ID</div>,
+    header: "Job ID & Name",
     cell: ({ row }) => {
       const id: string = row.getValue("id");
-      return <div className="">{id}</div>;
+      const name = row.original.name;
+      if (!name) {
+        return (
+          <div className="flex items-center">
+            {id}
+            <div className="opacity-0">
+              <div>x</div>
+              <div>x</div>
+            </div>
+          </div>
+        );
+      }
+      return (
+        <div>
+          {id}
+          <div className="text-muted-foreground overflow-ellipsis">{name}</div>
+        </div>
+      );
     },
   },
   {
@@ -111,7 +127,7 @@ const statuses = [
   {
     value: "active",
     label: "Active",
-    icon: CheckCheckIcon,
+    icon: PlayIcon,
   },
   {
     value: "paused",
@@ -129,7 +145,7 @@ const triggerTypes = [
   {
     value: "cron",
     label: "Cron",
-    icon: Repeat1Icon,
+    icon: RepeatIcon,
   },
   {
     value: "one-time",
