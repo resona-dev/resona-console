@@ -58,7 +58,7 @@ export function JobCard({ className, jobId, ...props }: JobCardProps) {
 
   let cronExpression = "";
   if (job.trigger.type === "cron") {
-    const fields = job.trigger.fields as { [key: string]: string };
+    const fields = job.trigger.fields;
     cronExpression = `${fields.minute} ${fields.hour} ${fields.day} ${fields.month} ${fields.day_of_week}`;
   }
 

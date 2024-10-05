@@ -42,17 +42,18 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   createJobMutation,
   getAllJobsQueryKey,
+  updateJobMutation,
 } from "@/client/@tanstack/react-query.gen";
+import { ScheduledJob } from "@/client";
 
 const METHODS = ["GET", "POST", "PUT", "DELETE", "UPDATE"] as const;
-const MethodEnum = z.enum(METHODS).default("GET");
 
 const formSchema = z
   .object({
     id: z.string().optional(),
     name: z.string().optional(),
     url: z.string().url(),
-    method: MethodEnum,
+    method: z.enum(METHODS).default("GET"),
     headers: z.string().optional(),
     body: z.string().optional(),
     triggerType: z.enum(["one-time", "cron"]),
@@ -97,10 +98,10 @@ const formSchema = z
     }
   );
 
-export function CreateJobDialog() {
+export function CreateJobDialog({ job }: { job?: ScheduledJob }) {
   const queryClient = useQueryClient();
 
-  const addCallbackMutation = useMutation({
+  const createCallbackMutation = useMutation({
     ...createJobMutation(),
     onError: (error) => console.log(error),
     onSettled: () => {
@@ -108,17 +109,34 @@ export function CreateJobDialog() {
     },
   });
 
+  const updateCallbackMutation = useMutation({
+    ...updateJobMutation(),
+    onError: (error) => console.log(error),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: getAllJobsQueryKey() });
+    },
+  });
+
+  let cronExpression = "";
+  if (job?.trigger.type === "cron") {
+    const fields = job.trigger.fields;
+    cronExpression = `${fields.minute} ${fields.hour} ${fields.day} ${fields.month} ${fields.day_of_week}`;
+  }
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      id: "",
-      name: "",
-      url: "",
-      headers: "",
-      body: "",
-      triggerType: "one-time",
+      id: job?.id ?? "",
+      name: job?.name ?? "",
+      url: job?.request.url ?? "",
+      headers: job?.request.headers ? JSON.stringify(job.request.headers) : "",
+      body: job?.request.body ? JSON.stringify(job.request.body) : "",
+      triggerType: job?.trigger.type ?? "one-time",
       delay: "",
-      cronExpression: "",
+      runDate: job?.trigger.fields.date
+        ? new Date(job?.trigger.fields.date)
+        : undefined,
+      cronExpression: cronExpression,
     },
   });
 
@@ -131,37 +149,53 @@ export function CreateJobDialog() {
       ).toISOString();
     }
 
-    addCallbackMutation.mutate({
-      body: {
-        id: values.id === "" ? undefined : values.id,
-        name: values.name === "" ? undefined : values.name,
-        request: {
-          url: values.url,
-          method: values.method,
-          headers: values.headers ? JSON.parse(values.headers) : null,
-          body: values.body ? JSON.parse(values.body) : null,
-        },
-        trigger:
-          values.triggerType === "one-time"
-            ? {
-                delay: values.delay === "" ? undefined : Number(values.delay),
-                date: date,
-              }
-            : {
-                cron: values.cronExpression!,
-              },
+    const args = {
+      id: values.id === "" ? undefined : values.id,
+      name: values.name === "" ? undefined : values.name,
+      request: {
+        url: values.url,
+        method: values.method,
+        headers: values.headers ? JSON.parse(values.headers) : null,
+        body: values.body ? JSON.parse(values.body) : null,
       },
-    });
+      trigger:
+        values.triggerType === "one-time"
+          ? {
+              delay: values.delay === "" ? undefined : Number(values.delay),
+              date: date,
+            }
+          : {
+              cron: values.cronExpression!,
+            },
+    };
+
+    if (job) {
+      updateCallbackMutation.mutate({
+        path: { job_id: job.id },
+        body: args,
+      });
+    } else {
+      createCallbackMutation.mutate({
+        body: args,
+      });
+    }
     console.log(values);
   }
 
   return (
-    <DialogContent className="sm:max-w-[725px]">
+    <DialogContent
+      className="sm:max-w-[725px]"
+      onClick={(event) => {
+        event.stopPropagation();
+      }}
+    >
       <DialogHeader>
-        <DialogTitle>Schedule a new Job</DialogTitle>
+        <DialogTitle>
+          {job ? `Update Job ${job.id}` : "Schedule a new Job"}
+        </DialogTitle>
         <DialogDescription>
-          After creation, this job will be scheduled to run at the specified
-          time.
+          After {job ? "the update" : "creation"}, this job will be scheduled to
+          run at the specified time.
         </DialogDescription>
       </DialogHeader>
       <Form {...form}>
@@ -181,6 +215,7 @@ export function CreateJobDialog() {
                       <Input
                         placeholder="771b2c2d-288b-4bb6-8ab5-f505601375c4"
                         {...field}
+                        disabled={!!job}
                       />
                     </FormControl>
                     <FormDescription>
@@ -214,7 +249,7 @@ export function CreateJobDialog() {
               <div className="space-y-2">
                 <FormLabel>Trigger</FormLabel>
                 <Tabs
-                  defaultValue="one-time"
+                  defaultValue={job?.trigger.type ?? "one-time"}
                   onValueChange={(value) => {
                     form.setValue("triggerType", value as "one-time" | "cron");
                   }}
@@ -412,7 +447,7 @@ export function CreateJobDialog() {
             <DialogClose asChild>
               <Button variant="ghost">Cancel</Button>
             </DialogClose>
-            <Button type="submit">Create</Button>
+            <Button type="submit">{job ? "Update" : "Create"}</Button>
           </DialogFooter>
         </form>
       </Form>

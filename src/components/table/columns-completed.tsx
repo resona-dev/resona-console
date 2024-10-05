@@ -49,8 +49,6 @@ export const columnsCompleted: ColumnDef<ScheduledJob>[] = [
   },
   {
     accessorKey: "result.completed_at",
-    sortDescFirst: true,
-    invertSorting: true,
     header: ({ column }) => {
       return (
         <Button

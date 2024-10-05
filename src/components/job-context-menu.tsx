@@ -9,9 +9,11 @@ import {
 } from "./ui/dropdown-menu";
 import {
   Edit2Icon,
+  EditIcon,
   MoreVertical,
   PauseIcon,
   PlayIcon,
+  PlusIcon,
   TrashIcon,
 } from "lucide-react";
 import { Button, buttonVariants } from "./ui/button";
@@ -22,8 +24,11 @@ import {
   resumeJobMutation,
   removeJobMutation,
 } from "@/client/@tanstack/react-query.gen";
+import React from "react";
 import { VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
+import { Dialog, DialogTrigger } from "./ui/dialog";
+import { CreateJobDialog } from "./create-job-dialog";
 
 export interface JobContextMenuProps
   extends React.HTMLAttributes<HTMLDivElement>,
@@ -37,6 +42,7 @@ export function JobContextMenu({
   variant,
 }: JobContextMenuProps) {
   const queryClient = useQueryClient();
+  const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
 
   const onPause = async () => {
     onPauseJobMutation.mutate({ path: { job_id: job.id } });
@@ -76,60 +82,71 @@ export function JobContextMenu({
   });
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          size="icon"
-          variant={variant ?? "outline"}
-          className={cn("h-8 w-8 cursor-pointer", className)}
-          onClick={(event) => event.stopPropagation()}
-        >
-          <MoreVertical className="h-3.5 w-3.5" />
-          <span className="sr-only">More</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer">
-          <Edit2Icon className="h-4 w-4 mr-2" />
-          Edit
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          className="cursor-pointer"
-          onClick={(event) => {
-            event.stopPropagation();
-            if (job.status === "paused") {
-              onResume();
-            } else {
-              onPause();
-            }
-          }}
-        >
-          {job.status === "paused" ? (
-            <>
-              <PlayIcon className="h-4 w-4 mr-2" />
-              Resume
-            </>
-          ) : (
-            <>
-              <PauseIcon className="h-4 w-4 mr-2" />
-              Pause
-            </>
-          )}
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="cursor-pointer focus:bg-destructive focus:text-destructive-foreground"
-          onClick={(event) => {
-            event.stopPropagation();
-            onRemove();
-          }}
-        >
-          <TrashIcon className="h-4 w-4 mr-2" />
-          Delete
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <>
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <CreateJobDialog job={job} />
+      </Dialog>
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger asChild>
+          <Button
+            size="icon"
+            variant={variant ?? "outline"}
+            className={cn("h-8 w-8 cursor-pointer", className)}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <MoreVertical className="h-3.5 w-3.5" />
+            <span className="sr-only">More</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={(event) => {
+              setIsEditDialogOpen(true);
+              event.stopPropagation();
+            }}
+          >
+            <EditIcon className="h-4 w-4 mr-2" />
+            Edit
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={(event) => {
+              event.stopPropagation();
+              if (job.status === "paused") {
+                onResume();
+              } else {
+                onPause();
+              }
+            }}
+          >
+            {job.status === "paused" ? (
+              <>
+                <PlayIcon className="h-4 w-4 mr-2" />
+                Resume
+              </>
+            ) : (
+              <>
+                <PauseIcon className="h-4 w-4 mr-2" />
+                Pause
+              </>
+            )}
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            className="cursor-pointer focus:bg-destructive focus:text-destructive-foreground"
+            onClick={(event) => {
+              event.stopPropagation();
+              onRemove();
+            }}
+          >
+            <TrashIcon className="h-4 w-4 mr-2" />
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
   );
 }
