@@ -19,13 +19,7 @@ import {
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  PanelLeft,
-  Settings,
-  Home,
-  Monitor,
-  PlusIcon,
-} from "lucide-react";
+import { PanelLeft, Settings, Home, Monitor, PlusIcon } from "lucide-react";
 
 import {
   Card,
@@ -56,14 +50,16 @@ import {
   columnsCompleted,
   completedJobsConfig,
 } from "@/components/table/columns-completed";
-import {
-  Dialog,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { CreateJobDialog } from "@/components/create-job-dialog";
 
 client.setConfig({ baseUrl: "http://127.0.0.1:8000/" });
 const queryClient = new QueryClient();
+
+export interface SelectedJob {
+  id: string;
+  completedAt?: string;
+}
 
 export default function App() {
   return (
@@ -82,7 +78,7 @@ function Dashboard() {
     error: completedJobsError,
     data: completedJobs,
   } = useQuery({ ...getAllCompletedJobsOptions() });
-  const [selectedJobId, setSelectedJobId] = React.useState<string | null>();
+  const [selectedJob, setSelectedJob] = React.useState<SelectedJob>();
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -225,8 +221,14 @@ function Dashboard() {
                       columns={columns}
                       data={jobs ?? []}
                       onRowClick={(job) =>
-                        setSelectedJobId(
-                          job.id == selectedJobId ? null : job.id
+                        setSelectedJob(
+                          selectedJob?.id === job.id &&
+                            selectedJob.completedAt === job.result?.completed_at
+                            ? undefined
+                            : {
+                                id: job.id,
+                                completedAt: job.result?.completed_at,
+                              }
                         )
                       }
                       isLoading={isLoading}
@@ -249,8 +251,14 @@ function Dashboard() {
                       columns={columnsCompleted}
                       data={completedJobs ?? []}
                       onRowClick={(job) =>
-                        setSelectedJobId(
-                          job.id == selectedJobId ? null : job.id
+                        setSelectedJob(
+                          selectedJob?.id === job.id &&
+                            selectedJob.completedAt === job.result?.completed_at
+                            ? undefined
+                            : {
+                                id: job.id,
+                                completedAt: job.result?.completed_at,
+                              }
                         )
                       }
                       isLoading={isLoadingCompletedJobs}
@@ -261,7 +269,7 @@ function Dashboard() {
               </TabsContent>
             </Tabs>
           </div>
-          <JobCard jobId={selectedJobId} x-chunk="dashboard-05-chunk-4" />
+          <JobCard job={selectedJob} x-chunk="dashboard-05-chunk-4" />
         </main>
       </div>
     </div>
