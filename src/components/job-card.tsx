@@ -102,6 +102,16 @@ export function JobCard({ className, job, ...props }: JobCardProps) {
           <div className="font-semibold">Details</div>
           <ul className="grid gap-3">
             <li className="flex items-center justify-between">
+              <span className="text-muted-foreground">ID</span>
+              <code>{jobData.id}</code>
+            </li>
+            {jobData.name && (
+              <li className="flex items-start gap-8 justify-between">
+                <span className="text-muted-foreground">Name</span>
+                <span className="text-right">{jobData.name}</span>
+              </li>
+            )}
+            <li className="flex items-center justify-between">
               <span className="text-muted-foreground">Type</span>
               <JobTypeBadge type={jobData.trigger.type} />
             </li>
