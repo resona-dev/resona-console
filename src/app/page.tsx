@@ -14,7 +14,7 @@ import {
 } from "../client/@tanstack/react-query.gen";
 import { DataTable } from "../components/table/data-table";
 import {
-  columns,
+  columnsScheduled,
   scheduledJobsConfig,
 } from "../components/table/columns-scheduled";
 import * as React from "react";
@@ -75,7 +75,12 @@ export default function App() {
 function Dashboard() {
   const [open, setOpen] = React.useState(false);
   const queryClient = useQueryClient();
-  const { isLoading, error, data: jobs, refetch } = useQuery({ ...getAllJobsOptions() });
+  const {
+    isLoading,
+    error,
+    data: jobs,
+    refetch,
+  } = useQuery({ ...getAllJobsOptions() });
   const {
     isLoading: isLoadingCompletedJobs,
     error: completedJobsError,
@@ -222,7 +227,7 @@ function Dashboard() {
                   </CardHeader>
                   <CardContent>
                     <DataTable
-                      columns={columns}
+                      columns={columnsScheduled}
                       data={jobs ?? []}
                       onRowClick={(job) =>
                         setSelectedJob(

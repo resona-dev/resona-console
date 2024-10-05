@@ -21,7 +21,7 @@ import { JobTypeBadge } from "@/components/job-type-badge";
 import { JobContextMenu } from "@/components/job-context-menu";
 import { DataTableConfig } from "./data-table";
 
-export const columns: ColumnDef<ScheduledJob>[] = [
+export const columnsScheduled: ColumnDef<ScheduledJob>[] = [
   {
     accessorKey: "id",
     header: "Job ID & Name",
@@ -112,11 +112,10 @@ export const columns: ColumnDef<ScheduledJob>[] = [
   },
   {
     id: "actions",
-    size: 100,
     cell: ({ row }) => {
       return (
         <div className="flex justify-center">
-          <JobContextMenu variant="ghost" job={row.original} className="" />
+          <JobContextMenu variant="ghost" job={row.original} />
         </div>
       );
     },
@@ -141,7 +140,7 @@ const statuses = [
   },
 ];
 
-const triggerTypes = [
+export const triggerTypes = [
   {
     value: "cron",
     label: "Cron",

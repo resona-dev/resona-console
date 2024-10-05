@@ -3,77 +3,23 @@
 import { ColumnDef } from "@tanstack/react-table";
 import {
   ArrowDownIcon,
-  ArrowRightIcon,
   ArrowUpIcon,
   CheckIcon,
   CircleAlert,
   CircleX,
-  RepeatIcon,
 } from "lucide-react";
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { CaretSortIcon } from "@radix-ui/react-icons";
-import { JobStatusBadge } from "@/components/job-status-badge";
-import { JobTypeBadge } from "@/components/job-type-badge";
-import { ScheduledJob, JobStatus } from "@/client";
+import { ScheduledJob } from "@/client";
 import { DataTableConfig } from "./data-table";
+import { columnsScheduled, triggerTypes } from "./columns-scheduled";
 
 export const columnsCompleted: ColumnDef<ScheduledJob>[] = [
-  {
-    accessorKey: "id",
-    header: "Job ID & Name",
-    cell: ({ row }) => {
-      const id: string = row.getValue("id");
-      const name = row.original.name;
-      if (!name) {
-        return (
-          <div className="flex items-center">
-            {id}
-            <div className="opacity-0">
-              <div>x</div>
-              <div>x</div>
-            </div>
-          </div>
-        );
-      }
-      return (
-        <div>
-          {id}
-          <div className="text-muted-foreground overflow-ellipsis">{name}</div>
-        </div>
-      );
-    },
-  },
-  {
-    id: "name",
-    accessorKey: "name",
-    header: "Name",
-    accessorFn: (originalRow) => originalRow.name?.toString() ?? "",
-  },
-  {
-    id: "type",
-    accessorKey: "trigger.type",
-    header: "Type",
-    cell: ({ row }) => {
-      const type: string = row.original.trigger.type;
-      return <JobTypeBadge type={type} />;
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
-    },
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status: JobStatus = row.getValue("status");
-      return <JobStatusBadge status={status} />;
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
-    },
-  },
+  columnsScheduled[0]!,
+  columnsScheduled[1]!,
+  columnsScheduled[2]!,
   {
     accessorKey: "result.completed_at",
     header: ({ column }) => {
@@ -105,6 +51,12 @@ export const columnsCompleted: ColumnDef<ScheduledJob>[] = [
       return new Date(completedAt).toLocaleString();
     },
   },
+  {
+    id: "name",
+    accessorKey: "name",
+    header: "Name",
+    accessorFn: (originalRow) => originalRow.name?.toString() ?? "",
+  },
 ];
 
 const statuses = [
@@ -122,19 +74,6 @@ const statuses = [
     value: "completed-request-error",
     label: "Request Error",
     icon: CircleX,
-  },
-];
-
-const triggerTypes = [
-  {
-    value: "cron",
-    label: "Cron",
-    icon: RepeatIcon,
-  },
-  {
-    value: "one-time",
-    label: "One Time",
-    icon: ArrowRightIcon,
   },
 ];
 
