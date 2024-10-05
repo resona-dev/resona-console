@@ -72,6 +72,7 @@ export default function App() {
 }
 
 function Dashboard() {
+  const [open, setOpen] = React.useState(false);
   const { isLoading, error, data: jobs } = useQuery({ ...getAllJobsOptions() });
   const {
     isLoading: isLoadingCompletedJobs,
@@ -191,13 +192,13 @@ function Dashboard() {
                   </CardDescription>
                 </CardHeader>
                 <CardFooter>
-                  <Dialog>
+                  <Dialog open={open} onOpenChange={setOpen}>
                     <DialogTrigger asChild>
                       <Button>
                         <PlusIcon className="h-4 w-4 mr-2" /> Create new Job
                       </Button>
                     </DialogTrigger>
-                    <CreateJobDialog />
+                    <CreateJobDialog setIsOpen={setOpen} />
                   </Dialog>
                 </CardFooter>
               </Card>
@@ -240,10 +241,9 @@ function Dashboard() {
               <TabsContent value="completed">
                 <Card x-chunk="dashboard-05-chunk-3">
                   <CardHeader className="px-7">
-                    <CardTitle>Scheduled Jobs</CardTitle>
+                    <CardTitle>Completed Jobs</CardTitle>
                     <CardDescription>
-                      All currently registered jobs. They may have been
-                      scheduled by calling the API or by using the dashboard.
+                      All jobs that have been completed.
                     </CardDescription>
                   </CardHeader>
                   <CardContent>

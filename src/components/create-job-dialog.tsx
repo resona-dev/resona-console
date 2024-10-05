@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
+import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 
@@ -45,6 +45,8 @@ import {
   updateJobMutation,
 } from "@/client/@tanstack/react-query.gen";
 import { ScheduledJob } from "@/client";
+import { toast } from "sonner";
+import { AsyncButton } from "./async-button";
 
 const METHODS = ["GET", "POST", "PUT", "DELETE", "UPDATE"] as const;
 
@@ -98,7 +100,14 @@ const formSchema = z
     }
   );
 
-export function CreateJobDialog({ job }: { job?: ScheduledJob }) {
+export function CreateJobDialog({
+  job,
+  setIsOpen,
+}: {
+  job?: ScheduledJob;
+  setIsOpen?: (isOpen: boolean) => void;
+}) {
+  const [isLoading, setIsLoading] = React.useState(false);
   const queryClient = useQueryClient();
 
   const createCallbackMutation = useMutation({
@@ -107,6 +116,17 @@ export function CreateJobDialog({ job }: { job?: ScheduledJob }) {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: getAllJobsQueryKey() });
     },
+    onSuccess: (newJob) => {
+      toast("Job created successfully", {
+        description: newJob.next_run_time
+          ? "Next run: " + new Date(newJob.next_run_time).toLocaleString()
+          : null,
+        action: {
+          label: "Open",
+          onClick: () => console.log("Undo"),
+        },
+      });
+    },
   });
 
   const updateCallbackMutation = useMutation({
@@ -114,6 +134,9 @@ export function CreateJobDialog({ job }: { job?: ScheduledJob }) {
     onError: (error) => console.log(error),
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: getAllJobsQueryKey() });
+    },
+    onSuccess: (_) => {
+      toast("Job updated successfully");
     },
   });
 
@@ -140,46 +163,52 @@ export function CreateJobDialog({ job }: { job?: ScheduledJob }) {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    let date: string | undefined;
-    if (values.runDate) {
-      date = new Date(
-        values.runDate.getTime() +
-          values.runDate.getTimezoneOffset() * 60 * 1000
-      ).toISOString();
-    }
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      setIsLoading(true);
+      let date: string | undefined;
+      if (values.runDate) {
+        date = new Date(
+          values.runDate.getTime() +
+            values.runDate.getTimezoneOffset() * 60 * 1000
+        ).toISOString();
+      }
 
-    const args = {
-      id: values.id === "" ? undefined : values.id,
-      name: values.name === "" ? undefined : values.name,
-      request: {
-        url: values.url,
-        method: values.method,
-        headers: values.headers ? JSON.parse(values.headers) : null,
-        body: values.body ? JSON.parse(values.body) : null,
-      },
-      trigger:
-        values.triggerType === "one-time"
-          ? {
-              delay: values.delay === "" ? undefined : Number(values.delay),
-              date: date,
-            }
-          : {
-              cron: values.cronExpression!,
-            },
-    };
+      const args = {
+        id: values.id === "" ? undefined : values.id,
+        name: values.name === "" ? undefined : values.name,
+        request: {
+          url: values.url,
+          method: values.method,
+          headers: values.headers ? JSON.parse(values.headers) : null,
+          body: values.body ? JSON.parse(values.body) : null,
+        },
+        trigger:
+          values.triggerType === "one-time"
+            ? {
+                delay: values.delay === "" ? undefined : Number(values.delay),
+                date: date,
+              }
+            : {
+                cron: values.cronExpression!,
+              },
+      };
 
-    if (job) {
-      updateCallbackMutation.mutate({
-        path: { job_id: job.id },
-        body: args,
-      });
-    } else {
-      createCallbackMutation.mutate({
-        body: args,
-      });
+      if (job) {
+        await updateCallbackMutation.mutateAsync({
+          path: { job_id: job.id },
+          body: args,
+        });
+      } else {
+        await createCallbackMutation.mutateAsync({
+          body: args,
+        });
+      }
+      setIsOpen?.(false);
+      console.log(values);
+    } finally {
+      setIsLoading(false);
     }
-    console.log(values);
   }
 
   return (
@@ -447,7 +476,9 @@ export function CreateJobDialog({ job }: { job?: ScheduledJob }) {
             <DialogClose asChild>
               <Button variant="ghost">Cancel</Button>
             </DialogClose>
-            <Button type="submit">{job ? "Update" : "Create"}</Button>
+            <AsyncButton type="submit" isLoading={isLoading}>
+              {job ? "Update" : "Create"}
+            </AsyncButton>
           </DialogFooter>
         </form>
       </Form>
