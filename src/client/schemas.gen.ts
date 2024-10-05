@@ -13,12 +13,21 @@ export const APIRequestSchema = {
             default: 'POST'
         },
         headers: {
-            additionalProperties: {
-                type: 'string'
-            },
-            type: 'object',
+            anyOf: [
+                {
+                    additionalProperties: {
+                        type: 'string'
+                    },
+                    type: 'object'
+                },
+                {
+                    type: 'null'
+                }
+            ],
             title: 'Headers',
-            default: {}
+            examples: [
+                {}
+            ]
         },
         body: {
             title: 'Body',
@@ -173,6 +182,47 @@ export const JobStatusSchema = {
     title: 'JobStatus'
 } as const;
 
+export const JobUpdateSchema = {
+    properties: {
+        name: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Name',
+            examples: [
+                null
+            ]
+        },
+        request: {
+            '$ref': '#/components/schemas/APIRequest'
+        },
+        trigger: {
+            anyOf: [
+                {
+                    '$ref': '#/components/schemas/OneTimeTriggerCreate'
+                },
+                {
+                    '$ref': '#/components/schemas/CronTriggerCreate'
+                }
+            ],
+            title: 'Trigger',
+            examples: [
+                {
+                    delay: 1
+                }
+            ]
+        }
+    },
+    type: 'object',
+    required: ['request', 'trigger'],
+    title: 'JobUpdate'
+} as const;
+
 export const OneTimeTriggerCreateSchema = {
     properties: {
         delay: {
@@ -268,6 +318,10 @@ export const TriggerSchema = {
             '$ref': '#/components/schemas/TriggerType'
         },
         fields: {
+            additionalProperties: {
+                type: 'string'
+            },
+            type: 'object',
             title: 'Fields',
             examples: [
                 {}

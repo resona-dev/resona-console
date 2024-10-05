@@ -2,8 +2,8 @@
 
 import type { Options } from '@hey-api/client-fetch';
 import { queryOptions, type UseMutationOptions } from '@tanstack/react-query';
-import { client, getAllJobs, createJob, getAllCompletedJobs, getJob, removeJob, pauseJob, resumeJob } from '../services.gen';
-import type { CreateJobData, CreateJobError, CreateJobResponse, GetJobData, RemoveJobData, RemoveJobError, RemoveJobResponse, PauseJobData, PauseJobError, PauseJobResponse, ResumeJobData, ResumeJobError, ResumeJobResponse } from '../types.gen';
+import { client, getAllJobs, createJob, updateJob, getJob, removeJob, getAllCompletedJobs, pauseJob, resumeJob } from '../services.gen';
+import type { CreateJobData, CreateJobError, CreateJobResponse, UpdateJobData, UpdateJobError, UpdateJobResponse, GetJobData, RemoveJobData, RemoveJobError, RemoveJobResponse, PauseJobData, PauseJobError, PauseJobResponse, ResumeJobData, ResumeJobError, ResumeJobResponse } from '../types.gen';
 
 type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -74,21 +74,31 @@ export const createJobMutation = () => { const mutationOptions: UseMutationOptio
     }
 }; return mutationOptions; };
 
-export const getAllCompletedJobsQueryKey = (options?: Options) => [
-    createQueryKey("getAllCompletedJobs", options)
+export const updateJobQueryKey = (options: Options<UpdateJobData>) => [
+    createQueryKey("updateJob", options)
 ];
 
-export const getAllCompletedJobsOptions = (options?: Options) => { return queryOptions({
+export const updateJobOptions = (options: Options<UpdateJobData>) => { return queryOptions({
     queryFn: async ({ queryKey }) => {
-        const { data } = await getAllCompletedJobs({
+        const { data } = await updateJob({
             ...options,
             ...queryKey[0],
             throwOnError: true
         });
         return data;
     },
-    queryKey: getAllCompletedJobsQueryKey(options)
+    queryKey: updateJobQueryKey(options)
 }); };
+
+export const updateJobMutation = () => { const mutationOptions: UseMutationOptions<UpdateJobResponse, UpdateJobError, Options<UpdateJobData>> = {
+    mutationFn: async (options) => {
+        const { data } = await updateJob({
+            ...options,
+            throwOnError: true
+        });
+        return data;
+    }
+}; return mutationOptions; };
 
 export const getJobQueryKey = (options: Options<GetJobData>) => [
     createQueryKey("getJob", options)
@@ -115,6 +125,22 @@ export const removeJobMutation = () => { const mutationOptions: UseMutationOptio
         return data;
     }
 }; return mutationOptions; };
+
+export const getAllCompletedJobsQueryKey = (options?: Options) => [
+    createQueryKey("getAllCompletedJobs", options)
+];
+
+export const getAllCompletedJobsOptions = (options?: Options) => { return queryOptions({
+    queryFn: async ({ queryKey }) => {
+        const { data } = await getAllCompletedJobs({
+            ...options,
+            ...queryKey[0],
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getAllCompletedJobsQueryKey(options)
+}); };
 
 export const pauseJobQueryKey = (options: Options<PauseJobData>) => [
     createQueryKey("pauseJob", options)
