@@ -139,7 +139,6 @@ const triggerTypes = [
 ];
 
 export const scheduledJobsConfig: DataTableConfig = {
-  queryKey: getAllJobsQueryKey(),
   initialSort: [{ id: "next_run_time", desc: true }],
   filters: [
     {

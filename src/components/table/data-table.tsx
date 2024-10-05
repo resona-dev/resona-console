@@ -28,10 +28,8 @@ import { DataTablePagination } from "./pagination-controls";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DataTableToolbar } from "./data-table-toolbar";
 import { FacetedFilterOption } from "./faceted-filter";
-import { QueryKey } from "@tanstack/react-query";
 
 export interface DataTableConfig {
-  queryKey?: QueryKey;
   filters?: {
     accessorKey: string;
     title: string;
@@ -46,6 +44,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   onRowClick?: (row: TData) => void;
   isLoading: boolean;
+  refetch?: () => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -54,6 +53,7 @@ export function DataTable<TData, TValue>({
   onRowClick,
   isLoading,
   config,
+  refetch,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>(
     config?.initialSort ?? []
@@ -88,7 +88,7 @@ export function DataTable<TData, TValue>({
       <DataTableToolbar
         table={table}
         filters={config?.filters}
-        queryKey={config?.queryKey}
+        refetch={refetch}
       />
       <div className="rounded-md border">
         <Table>

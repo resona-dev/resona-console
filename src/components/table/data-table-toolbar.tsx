@@ -6,24 +6,23 @@ import { Cross2Icon } from "@radix-ui/react-icons";
 import { Table } from "@tanstack/react-table";
 import { FacetedFilter, FacetedFilterOption } from "./faceted-filter";
 import { RefreshCwIcon } from "lucide-react";
-import { QueryKey, useQueryClient } from "@tanstack/react-query";
+import { AsyncButton } from "../async-button";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
-  queryKey?: QueryKey;
   filters?: {
     accessorKey: string;
     title: string;
     options: FacetedFilterOption[];
   }[];
+  refetch?: () => void;
 }
 
 export function DataTableToolbar<TData>({
   table,
-  queryKey,
   filters,
+  refetch,
 }: DataTableToolbarProps<TData>) {
-  const queryClient = useQueryClient();
   const isFiltered = table.getState().columnFilters.length > 0;
 
   return (
@@ -56,17 +55,16 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
-      {queryKey && (
-        <Button
+      {refetch && (
+        <AsyncButton
           variant="outline"
           size="sm"
-          onClick={(event) =>
-            queryClient.refetchQueries({ queryKey: queryKey })
-          }
+          // isLoading={queryClient.isFetching({ queryKey: queryKey }) > 0}
+          onClick={refetch}
         >
           <RefreshCwIcon className="mr-2 h-4 w-4"></RefreshCwIcon>
           Refresh
-        </Button>
+        </AsyncButton>
       )}
     </div>
   );

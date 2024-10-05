@@ -112,7 +112,6 @@ const triggerTypes = [
 ];
 
 export const completedJobsConfig: DataTableConfig = {
-  queryKey: getAllCompletedJobsQueryKey(),
   initialSort: [{ id: "result_completed_at", desc: true }],
   filters: [
     {

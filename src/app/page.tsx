@@ -5,6 +5,7 @@ import {
   QueryClient,
   QueryClientProvider,
   useQuery,
+  useQueryClient,
 } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
@@ -54,7 +55,7 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { CreateJobDialog } from "@/components/create-job-dialog";
 
 client.setConfig({ baseUrl: "http://127.0.0.1:8000/" });
-const queryClient = new QueryClient();
+const baseQueryClient = new QueryClient();
 
 export interface SelectedJob {
   id: string;
@@ -63,7 +64,7 @@ export interface SelectedJob {
 
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={baseQueryClient}>
       <TooltipProvider>
         <Dashboard />
       </TooltipProvider>
@@ -73,11 +74,13 @@ export default function App() {
 
 function Dashboard() {
   const [open, setOpen] = React.useState(false);
-  const { isLoading, error, data: jobs } = useQuery({ ...getAllJobsOptions() });
+  const queryClient = useQueryClient();
+  const { isLoading, error, data: jobs, refetch } = useQuery({ ...getAllJobsOptions() });
   const {
     isLoading: isLoadingCompletedJobs,
     error: completedJobsError,
     data: completedJobs,
+    refetch: refetchCompletedJobs,
   } = useQuery({ ...getAllCompletedJobsOptions() });
   const [selectedJob, setSelectedJob] = React.useState<SelectedJob>();
 
@@ -234,6 +237,7 @@ function Dashboard() {
                       }
                       isLoading={isLoading}
                       config={scheduledJobsConfig}
+                      refetch={refetch}
                     ></DataTable>
                   </CardContent>
                 </Card>
@@ -263,6 +267,7 @@ function Dashboard() {
                       }
                       isLoading={isLoadingCompletedJobs}
                       config={completedJobsConfig}
+                      refetch={refetchCompletedJobs}
                     ></DataTable>
                   </CardContent>
                 </Card>

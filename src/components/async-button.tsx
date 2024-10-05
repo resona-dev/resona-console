@@ -29,9 +29,9 @@ export const AsyncButton = React.forwardRef<HTMLButtonElement, AsyncButtonProps>
       <Comp
         className={cn(buttonVariants({ variant, size, className }), "relative")}
         ref={ref}
-        onClick={handleClick}
-        disabled={loading || props.disabled}
         {...props}
+        disabled={loading || props.disabled}
+        onClick={handleClick}
       >
         {loading && (
           <div className="absolute h-full w-full bg-inherit rounded-[inherit] flex ">
