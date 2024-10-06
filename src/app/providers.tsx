@@ -5,7 +5,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { client } from "@/client";
 import { Toaster } from "sonner";
 
-client.setConfig({ baseUrl: "http://127.0.0.1:8000/" });
+client.setConfig({
+  baseUrl: process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000/",
+});
 const baseQueryClient = new QueryClient();
 
 export function Providers({

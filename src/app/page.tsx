@@ -1,8 +1,6 @@
 "use client";
 
-import {
-  useQuery,
-} from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
   getAllCompletedJobsOptions,
@@ -32,7 +30,6 @@ import {
 } from "@/components/table/columns-completed";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { CreateJobDialog } from "@/components/create-job-dialog";
-
 
 export interface SelectedJob {
   id: string;
