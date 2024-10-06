@@ -4,7 +4,6 @@ import Link from "next/link";
 import {
     Tooltip,
     TooltipContent,
-    TooltipProvider,
     TooltipTrigger,
   } from "@/components/ui/tooltip";
 

@@ -29,15 +29,14 @@ export function JobStatusBadge({
     "completed-successful": "Successful",
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const variant: any =
-    Object.entries(variantMapping).find(
-      ([key, value]) => key === status
-    )?.[1] ?? "default";
+    Object.entries(variantMapping).find(([key]) => key === status)?.[1] ??
+    "default";
 
-  const content: any =
-    Object.entries(contentMapping).find(
-      ([key, value]) => key === status
-    )?.[1] ?? "Unknown";
+  const content: string =
+    Object.entries(contentMapping).find(([key]) => key === status)?.[1] ??
+    "Unknown";
 
   return (
     <Badge variant={variant} {...props} className={className}>

@@ -43,13 +43,11 @@ export default function App() {
   const [open, setOpen] = React.useState(false);
   const {
     isLoading,
-    error,
     data: jobs,
     refetch,
   } = useQuery({ ...getAllJobsOptions() });
   const {
     isLoading: isLoadingCompletedJobs,
-    error: completedJobsError,
     data: completedJobs,
     refetch: refetchCompletedJobs,
   } = useQuery({ ...getAllCompletedJobsOptions() });

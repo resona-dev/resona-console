@@ -8,15 +8,9 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Button } from "./ui/button";
-import {
-  Copy,
-  ChevronLeft,
-  ChevronRight,
-  SquareDashedMousePointer,
-} from "lucide-react";
+import { Copy, SquareDashedMousePointer } from "lucide-react";
 import { Countdown } from "./countdown";
 import { JobStatusBadge } from "./job-status-badge";
-import { Pagination, PaginationContent, PaginationItem } from "./ui/pagination";
 import { JobTypeBadge } from "./job-type-badge";
 import { Separator } from "./ui/separator";
 import { JobContextMenu } from "./job-context-menu";
@@ -32,7 +26,9 @@ export interface JobCardProps extends React.HTMLAttributes<HTMLDivElement> {
   job?: SelectedJob;
 }
 
-export function JobCard({ className, job, ...props }: JobCardProps) {
+export function JobCard({ job, ...props }: JobCardProps) {
+  const queryClient = useQueryClient();
+
   if (!job) {
     return (
       <Card className="overflow-hidden" {...props}>
@@ -44,7 +40,6 @@ export function JobCard({ className, job, ...props }: JobCardProps) {
     );
   }
 
-  const queryClient = useQueryClient();
   const jobData =
     queryClient
       .getQueryData<ScheduledJob[]>(getAllJobsQueryKey())
@@ -140,22 +135,22 @@ export function JobCard({ className, job, ...props }: JobCardProps) {
                 </div>
               </li>
             )}
-            {isCompleted(jobData) && (
+            {isCompleted(jobData) && jobData.result && (
               <>
                 <li className="flex items-center justify-between">
                   <span className="text-muted-foreground">Completed At</span>
                   <div>
                     <span>
-                      {new Date(jobData.result?.completed_at!).toLocaleString()}
+                      {new Date(jobData.result.completed_at).toLocaleString()}
                     </span>
                   </div>
                 </li>
 
-                {jobData.result?.error_message && (
+                {jobData.result.error_message && (
                   <li className="flex items-center justify-between">
                     <span className="text-muted-foreground">Error Message</span>
                     <div>
-                      <span>{jobData.result?.error_message}</span>
+                      <span>{jobData.result.error_message}</span>
                     </div>
                   </li>
                 )}

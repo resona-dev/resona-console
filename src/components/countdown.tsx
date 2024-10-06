@@ -32,8 +32,8 @@ export function Countdown({
   React.useEffect(() => {
     let interval: NodeJS.Timeout;
     let timeout: NodeJS.Timeout;
-    let { interval: updateInterval, timeout: timeoutMs } =
-      determineUpdateInterval(targetTime);
+    const { interval: initialInterval, timeout: timeoutMs } = determineUpdateInterval(targetTime);
+    let updateInterval = initialInterval;
 
     timeout = setTimeout(() => {
       interval = setInterval(() => {

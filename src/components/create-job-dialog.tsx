@@ -135,7 +135,7 @@ export function CreateJobDialog({
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: getAllJobsQueryKey() });
     },
-    onSuccess: (_) => {
+    onSuccess: () => {
       toast("Job updated successfully");
     },
   });
@@ -248,7 +248,7 @@ export function CreateJobDialog({
                       />
                     </FormControl>
                     <FormDescription>
-                      The unique identifier for the job. If you don't provide
+                      The unique identifier for the job. If you don&apos;t provide
                       one, a random ID will be generated.
                     </FormDescription>
                     <FormMessage />

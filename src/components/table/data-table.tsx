@@ -2,7 +2,6 @@
 
 import {
   ColumnDef,
-  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFacetedRowModel,
@@ -12,7 +11,6 @@ import {
   getSortedRowModel,
   SortingState,
   useReactTable,
-  VisibilityState,
 } from "@tanstack/react-table";
 
 import {
@@ -108,7 +106,7 @@ export function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   className="cursor-pointer"
-                  onClick={(event) => {
+                  onClick={() => {
                     onRowClick?.(row.original);
                     table.resetRowSelection();
                     row.toggleSelected();
